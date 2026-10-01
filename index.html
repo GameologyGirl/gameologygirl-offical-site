@@ -1,0 +1,148 @@
+<!doctype html> <!-- Tells the browser this is a modern web page. Always keep this as the very first line. -->
+<html lang="en"> <!-- The start of the whole page. lang="en" says the page is in English. -->
+<head> <!-- The head holds behind-the-scenes info. Nothing in here shows on the page itself. -->
+  <meta charset="utf-8"> <!-- Lets the page show every kind of letter and symbol correctly. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"> <!-- Makes the page fit phone screens instead of looking tiny. -->
+  <title>portfolio version 1_9_27_26</title> <!-- The name shown on the browser tab. Change the words between the tags to rename it. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"> <!-- Says hello to Google Fonts early so the fonts load faster. -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> <!-- Same idea, for the server that sends the actual font files. -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,500,100;1,9..144,400,100&family=DM+Sans:opsz,wght@9..40,400;9..40,500&family=JetBrains+Mono:wght@400&display=swap"> <!-- Loads our three fonts: Fraunces (fancy serif), DM Sans (body text), JetBrains Mono (placeholder labels only). -->
+  <link rel="stylesheet" href="style.css"> <!-- Loads our style file. style.css decides colors, sizes, and layout. -->
+</head> <!-- End of the behind-the-scenes part. -->
+<body> <!-- Everything inside body is what visitors actually see. -->
+
+  <!-- ===================== BACKGROUND LAYERS ===================== -->
+  <div id="background-color-layer" aria-hidden="true"></div> <!-- A full-screen color layer behind everything. script.js fades its color as you scroll. aria-hidden means screen readers skip it. -->
+  <canvas id="sparkle-canvas" aria-hidden="true"></canvas> <!-- A see-through drawing board on top of the page. script.js draws the sparkles and fireworks here. -->
+
+  <!-- ===================== HEADER (top bar) ===================== -->
+  <header> <!-- The floating header at the top of the screen. -->
+    <div class="header-inner"> <!-- A box that keeps the header lined up with the rest of the page. -->
+      <div class="logo">GAMEOLOGY<span class="logo-pink">GIRL</span></div> <!-- The logo. The span around GIRL lets us color just that word pink. -->
+      <nav aria-label="Sections"> <!-- nav means "navigation." aria-label tells screen readers what this menu is for. -->
+        <ol class="menu"> <!-- ol is a list. Each li below is one menu item. -->
+          <li><button data-go="0" aria-current="true">About</button></li> <!-- data-go="0" means "glide to section number 0" (the first section). -->
+          <li><button data-go="1">Work</button></li> <!-- data-go="1" means the second section. Computers count from 0! -->
+          <li><button data-go="2">Contact</button></li> <!-- data-go="2" means the third section. -->
+        </ol> <!-- End of the menu list. -->
+      </nav> <!-- End of the navigation. -->
+    </div> <!-- End of header-inner. -->
+  </header> <!-- End of the header. -->
+
+  <!-- ===================== MAIN PAGE CONTENT ===================== -->
+  <main id="stage"> <!-- main holds all the sections. id="stage" lets script.js find it, because the ball lives in here too. -->
+
+    <!-- ---------- SECTION 1: ABOUT ---------- -->
+    <section class="section" id="about"> <!-- Every section uses class="section" so script.js can count them. -->
+      <div class="section-inner"> <!-- Keeps the content from getting too wide on big screens. -->
+        <span class="section-title">About</span> <!-- The small pink title at the top of the section. -->
+        <div class="two-columns"> <!-- Puts the text on the left and the portrait on the right. -->
+          <div class="stack"> <!-- A stack puts things on top of each other with even spacing. -->
+            <h1>Brandy Coleman</h1> <!-- h1 is the biggest, most important heading. Use only one per page. -->
+            <p class="subtitle">Game designer and creative technologist</p> <!-- The italic line under your name. -->
+            <p class="body-text">I design games and interactive experiences that help people learn, feel, and connect. My background in Art History and Anthropology shapes how I approach every project, with a focus on culture, community, and storytelling.</p> <!-- First bio paragraph. Edit the words freely. -->
+            <p class="body-text">I hold an MA in Design and Development of Digital Games from Teachers College, Columbia University, and I work as a Technical Producer at The Emancipation Group, where I help build educational games.</p> <!-- Second bio paragraph. -->
+          </div> <!-- End of the text stack. -->
+          <div class="placeholder portrait">portrait</div> <!-- A gray stand-in for your photo. Later, swap this whole line for: <img class="portrait" src="your-photo.jpg" alt="Brandy Coleman"> -->
+        </div> <!-- End of two-columns. -->
+      </div> <!-- End of section-inner. -->
+    </section> <!-- End of the About section. -->
+
+    <!-- ---------- SECTION 2: WORK ---------- -->
+    <section class="section" id="work"> <!-- The Work section. -->
+      <div class="section-inner roomy"> <!-- "roomy" adds extra space between the parts of this section. -->
+        <span class="section-title">Work</span> <!-- Section title. -->
+        <div class="two-columns equal"> <!-- "equal" makes both columns the same width. -->
+          <button class="placeholder thumbnail featured-image" data-open="dsff" aria-label="Open Dark Scenes with the Fear Forge case study"> <!-- The big featured image. data-open="dsff" tells script.js which case study to open when clicked. -->
+            <span class="placeholder-label">hero image or video<br>Dark Scenes with the Fear Forge</span> <!-- Gray placeholder words. <br> means "new line." -->
+            <span class="preview-label">preview loop playing</span> <!-- This little label only shows while you hover. -->
+          </button> <!-- End of the featured image button. -->
+          <div class="stack"> <!-- The text next to the featured image. -->
+            <span class="small-label">Featured</span> <!-- Tiny label above the project name. -->
+            <h2>Dark Scenes with the Fear Forge</h2> <!-- h2 is the second-biggest heading. -->
+            <p class="body-text">A handcrafted, coffin-shaped sound instrument and horror card game that helps children ages 8 to 12 build emotional resilience. Players face their fears together through sound, story, and play.</p> <!-- Short project description. -->
+            <button class="glow-button" data-open="dsff">Read case study</button> <!-- A glowing pill button. It also opens the DSFF case study. -->
+          </div> <!-- End of the featured text. -->
+        </div> <!-- End of the featured row. -->
+
+        <div class="project-grid"> <!-- The grid of smaller project cards. It makes as many columns as fit the screen. -->
+          <div class="stack project-card" data-open="career-explorer" tabindex="0" role="button" aria-label="Open Game Career Explorer case study"> <!-- One project card. tabindex="0" lets keyboard users reach it with the Tab key. -->
+            <div class="placeholder thumbnail"> <!-- The card's thumbnail picture area. -->
+              <span class="placeholder-label">thumbnail</span> <!-- Placeholder word. -->
+              <span class="preview-label">preview loop playing</span> <!-- Shows on hover. -->
+            </div> <!-- End of thumbnail. -->
+            <b class="project-name">Game Career Explorer</b> <!-- The project name. -->
+            <p class="body-text small">An interactive web experience that simulates a game studio internship across seven departments.</p> <!-- One-line description. -->
+          </div> <!-- End of card 1. -->
+
+          <div class="stack project-card" data-open="ar-history" tabindex="0" role="button" aria-label="Open Location-based AR history case study"> <!-- Project card 2. -->
+            <div class="placeholder thumbnail"> <!-- Thumbnail area. -->
+              <span class="placeholder-label">thumbnail</span> <!-- Placeholder word. -->
+              <span class="preview-label">preview loop playing</span> <!-- Shows on hover. -->
+            </div> <!-- End of thumbnail. -->
+            <b class="project-name">Location-based AR history</b> <!-- Project name. -->
+            <p class="body-text small">An augmented reality learning tour that connects communities to untold histories in public spaces.</p> <!-- Description. -->
+          </div> <!-- End of card 2. -->
+
+          <div class="stack project-card" data-open="project-three" tabindex="0" role="button" aria-label="Open Project three case study"> <!-- Project card 3. To add a 4th card, copy this whole block and paste it below. -->
+            <div class="placeholder thumbnail"> <!-- Thumbnail area. -->
+              <span class="placeholder-label">thumbnail</span> <!-- Placeholder word. -->
+              <span class="preview-label">preview loop playing</span> <!-- Shows on hover. -->
+            </div> <!-- End of thumbnail. -->
+            <b class="project-name">Project three</b> <!-- Project name. -->
+            <p class="body-text small">One or two sentences about the project, the tools used, and your role on the team.</p> <!-- Description. -->
+          </div> <!-- End of card 3. -->
+        </div> <!-- End of the project grid. -->
+      </div> <!-- End of section-inner. -->
+    </section> <!-- End of the Work section. -->
+
+    <!-- ---------- SECTION 3: CONTACT ---------- -->
+    <section class="section" id="contact"> <!-- The Contact section. Its content is centered (see style.css). -->
+      <div class="section-inner"> <!-- Keeps the width tidy. -->
+        <span class="section-title">Contact</span> <!-- Section title. -->
+        <h2>Say hello</h2> <!-- Heading. -->
+        <p class="email">hello@gameologygirl.com</p> <!-- Your email, written out. Clicking it selects the whole address so people can copy it. Put your real email here. -->
+        <p class="body-text">I am open to roles in game design, UX, and learning experience design. I would love to hear from you.</p> <!-- Short message. -->
+        <div class="button-row"> <!-- Holds the buttons side by side. -->
+          <a class="glow-button" href="https://www.linkedin.com/in/gameologygirl" target="_blank" rel="noopener">LinkedIn</a> <!-- A real link to LinkedIn. target="_blank" opens it in a new tab. -->
+          <a class="glow-button" href="resume.pdf" target="_blank" rel="noopener">Resume</a> <!-- Opens your resume. Put a file named resume.pdf next to this page. -->
+        </div> <!-- End of button-row. -->
+      </div> <!-- End of section-inner. -->
+    </section> <!-- End of the Contact section. -->
+
+    <!-- ---------- THE BALL OF LIGHT ---------- -->
+    <button id="ball" aria-label="Ball of light. Touch it."> <!-- The invisible touch area around the ball. It is bigger than the light so people never quite reach it. -->
+      <span class="ball-light"></span> <!-- The glowing light itself. All its looks are in style.css. -->
+    </button> <!-- End of the ball. -->
+
+  </main> <!-- End of the main content. -->
+
+  <!-- ===================== CASE STUDY POP-UP ===================== -->
+  <div id="case-study" class="case-study" role="dialog" aria-modal="true" aria-labelledby="case-title" hidden> <!-- The full-screen pop-up. "hidden" keeps it invisible until a project is clicked. script.js fills in the words. -->
+    <div class="case-study-panel" id="case-study-panel"> <!-- The dark panel that slides up. -->
+      <div class="case-study-top"> <!-- The top strip that stays put while you scroll. -->
+        <span class="case-study-kicker">Case study</span> <!-- Small pink label. -->
+        <button class="close-button" id="close-button" aria-label="Close case study">Close <span aria-hidden="true">✕</span></button> <!-- Closes the pop-up. The ✕ is just decoration. -->
+      </div> <!-- End of the top strip. -->
+      <div class="case-study-body"> <!-- Everything below the top strip. -->
+        <section class="placard"> <!-- The "museum placard": a big image with a wall label beside it. -->
+          <div class="placeholder placard-media" id="case-media">hero image or video</div> <!-- The big image area. -->
+          <div class="wall-label"> <!-- The wall label with the pink line down its side. -->
+            <h2 class="wall-label-title" id="case-title"></h2> <!-- Project title (filled in by script.js). -->
+            <p class="wall-label-credit" id="case-credit"></p> <!-- "Brandy Coleman, year" (filled in by script.js). -->
+            <p class="wall-label-line" id="case-materials"></p> <!-- Materials or tools. -->
+            <p class="wall-label-line soft" id="case-role"></p> <!-- Your role. -->
+            <p class="wall-label-note" id="case-note"></p> <!-- One-sentence description. -->
+          </div> <!-- End of the wall label. -->
+        </section> <!-- End of the placard. -->
+        <section class="story" id="case-story"></section> <!-- The story sections (Overview, Process, and so on) get added here by script.js. -->
+        <div class="case-study-footer"> <!-- Bottom row of the pop-up. -->
+          <button class="glow-button" id="next-button">Next project</button> <!-- Shows the next project without closing. -->
+        </div> <!-- End of the footer. -->
+      </div> <!-- End of case-study-body. -->
+    </div> <!-- End of the panel. -->
+  </div> <!-- End of the pop-up. -->
+
+  <script src="script.js"></script> <!-- Loads script.js, which makes everything move. It goes last so the page is ready first. -->
+</body> <!-- End of the visible page. -->
+</html> <!-- End of the whole page. -->
