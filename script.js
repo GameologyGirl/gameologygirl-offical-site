@@ -710,8 +710,7 @@ const PROJECTS = {                                         // All the case studi
     sections: [                                            // The story parts. Each is [heading, the HTML inside it].
       ['Overview', '<p class="body-text">A handcrafted, coffin-shaped sound instrument and horror card game that helps children ages 8 to 12 build emotional resilience. Players face their fears together through sound, story, and play.</p>'],  // Same pattern as the first project above.
       ['Process', '<p class="body-text">Two or three short paragraphs on research, early sketches, and how the instrument and card game came together.</p><div class="project-grid"><div class="placeholder" style="aspect-ratio:4/3">sketch</div><div class="placeholder" style="aspect-ratio:4/3">prototype</div><div class="placeholder" style="aspect-ratio:4/3">build</div></div>'],  // Same pattern as the first project above.
-      ['Playtest', '<p class="body-text">Who played, what you watched for, and the moments that surprised you. A pull quote from a player works well here.</p><div class="placeholder" style="aspect-ratio:16/9">playtest photo or clip</div>'],  // Same pattern as the first project above.
-      ['Outcomes', '<p class="body-text">Results from playtest data, what you would do next, and what you learned as a designer.</p>']  // Same pattern as the first project above.
+      ['Outcomes', '<p class="body-text">Results, what you would do next, and what you learned as a designer.</p>']  // Same pattern as the first project above.
     ]                                                     // Same pattern as the first project above.
   },                                                      // Same pattern as the first project above.
   'career-explorer': {                                    // Same pattern as the first project above.
@@ -722,7 +721,7 @@ const PROJECTS = {                                         // All the case studi
     note: 'An interactive web experience that simulates a game studio internship across seven departments.',  // Same pattern as the first project above.
     sections: [                                           // Same pattern as the first project above.
       ['Overview', '<p class="body-text">An interactive web experience that simulates a game studio internship across seven departments, with an integrated Unity demo game.</p>'],  // Same pattern as the first project above.
-      ['Process', '<p class="body-text">How you mapped studio roles into playable moments.</p>'],  // Same pattern as the first project above.
+      ['Process', '<p class="body-text">How you mapped studio roles into playable moments.</p><div class="project-grid"><div class="placeholder" style="aspect-ratio:4/3">sketch</div><div class="placeholder" style="aspect-ratio:4/3">prototype</div><div class="placeholder" style="aspect-ratio:4/3">build</div></div>'],  // Same pattern as the first project above.
       ['Outcomes', '<p class="body-text">Feedback, results, and next steps.</p>']  // Same pattern as the first project above.
     ]                                                     // Same pattern as the first project above.
   },                                                      // Same pattern as the first project above.
@@ -734,7 +733,7 @@ const PROJECTS = {                                         // All the case studi
     note: 'An augmented reality learning tour that connects communities to untold histories in public spaces.',  // Same pattern as the first project above.
     sections: [                                           // Same pattern as the first project above.
       ['Overview', '<p class="body-text">An augmented reality learning tour that connects communities to untold histories in public spaces.</p>'],  // Same pattern as the first project above.
-      ['Process', '<p class="body-text">How you chose sites, built the AR layer, and tested on location.</p>'],  // Same pattern as the first project above.
+      ['Process', '<p class="body-text">How you chose sites, built the AR layer, and tested on location.</p><div class="project-grid"><div class="placeholder" style="aspect-ratio:4/3">sketch</div><div class="placeholder" style="aspect-ratio:4/3">prototype</div><div class="placeholder" style="aspect-ratio:4/3">build</div></div>'],  // Same pattern as the first project above.
       ['Outcomes', '<p class="body-text">Results and reflections.</p>']  // Same pattern as the first project above.
     ]                                                     // Same pattern as the first project above.
   },                                                      // Same pattern as the first project above.
@@ -746,6 +745,7 @@ const PROJECTS = {                                         // All the case studi
     note: 'A one-line hook for this project.',            // Same pattern as the first project above.
     sections: [                                           // Same pattern as the first project above.
       ['Overview', '<p class="body-text">One or two sentences about the project, the tools used, and your role on the team.</p>'],  // Same pattern as the first project above.
+      ['Process', '<p class="body-text">Two or three short paragraphs on research, early sketches, and how the project came together.</p><div class="project-grid"><div class="placeholder" style="aspect-ratio:4/3">sketch</div><div class="placeholder" style="aspect-ratio:4/3">prototype</div><div class="placeholder" style="aspect-ratio:4/3">build</div></div>'],  // Same pattern as the first project above.
       ['Outcomes', '<p class="body-text">What happened and what you learned.</p>']  // Same pattern as the first project above.
     ]                                                     // Same pattern as the first project above.
   }                                                       // Same pattern as the first project above.
