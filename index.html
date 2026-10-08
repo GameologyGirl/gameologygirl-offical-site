@@ -41,7 +41,7 @@
             <h1>Brandy Coleman</h1> <!-- h1 is the biggest, most important heading. Use only one per page. -->
             <p class="subtitle">Game designer and creative technologist</p> <!-- The italic line under your name. -->
             <p class="body-text">I design games and interactive experiences that help people learn, feel, and connect. My background in Art History and Anthropology shapes how I approach every project, with a focus on culture, community, and storytelling.</p> <!-- First bio paragraph. Edit the words freely. -->
-            <p class="body-text">I hold an MA in Design and Development of Digital Games from Teachers College, Columbia University, and I work as a Technical Producer at The Emancipation Group, where I help build educational games.</p> <!-- Second bio paragraph. -->
+            <p class="body-text">I hold an MA in Design and Development of Digital Games from Teachers College, Columbia University.</p> <!-- Second bio paragraph. -->
           </div> <!-- End of the text stack. -->
           <div class="placeholder portrait">portrait</div> <!-- A gray stand-in for your photo. Later, swap this whole line for: <img class="portrait" src="your-photo.jpg" alt="Brandy Coleman"> -->
         </div> <!-- End of two-columns. -->
@@ -65,34 +65,126 @@
           </div> <!-- End of the featured text. -->
         </div> <!-- End of the featured row. -->
 
-        <div class="project-grid"> <!-- The grid of smaller project cards. It makes as many columns as fit the screen. -->
-          <div class="stack project-card" data-open="career-explorer" tabindex="0" role="button" aria-label="Open Game Career Explorer case study"> <!-- One project card. tabindex="0" lets keyboard users reach it with the Tab key. -->
-            <div class="placeholder thumbnail"> <!-- The card's thumbnail picture area. -->
-              <span class="placeholder-label">thumbnail</span> <!-- Placeholder word. -->
-              <span class="preview-label">preview loop playing</span> <!-- Shows on hover. -->
-            </div> <!-- End of thumbnail. -->
-            <b class="project-name">Game Career Explorer</b> <!-- The project name. -->
-            <p class="body-text small">An interactive web experience that simulates a game studio internship across seven departments.</p> <!-- One-line description. -->
-          </div> <!-- End of card 1. -->
+        <div class="peek-carousel"> <!-- A sideways-scrolling row of case study cards. You see some cards fully and "peek" at the next one. -->
+          <div class="peek-controls"> <!-- The two arrow buttons for mouse users. Phones can just swipe. -->
+            <button class="peek-arrow" data-direction="-1" aria-label="Show previous projects">←</button> <!-- Scrolls the row back one card. -->
+            <button class="peek-arrow" data-direction="1" aria-label="Show more projects">→</button> <!-- Scrolls the row forward one card. -->
+          </div> <!-- End of the arrow buttons. -->
+          <div class="peek-row" id="project-row"> <!-- The row itself. Each card here opens a full case study. -->
+            <div class="stack project-card" data-open="career-explorer" tabindex="0" role="button" aria-label="Open Game Career Explorer case study"> <!-- Case study card 1. data-open must match a project id in script.js. -->
+              <div class="placeholder thumbnail"> <!-- Thumbnail area. Swap for an <img> or <video> later. -->
+                <span class="placeholder-label">thumbnail</span> <!-- Placeholder word. -->
+                <span class="preview-label">preview loop playing</span> <!-- Shows on hover. -->
+              </div> <!-- End of thumbnail. -->
+              <b class="project-name">Game Career Explorer</b> <!-- Project name. -->
+              <p class="body-text small">An interactive web experience that simulates a game studio internship across seven departments, ending in a Unity demo game.</p> <!-- One-line description. -->
+              <ul class="tags" aria-label="Project type"><li>Learning</li><li>Web</li><li>Game</li></ul> <!-- Small tags that say what kind of project this is. Add or remove <li> items. -->
+            </div> <!-- End of case study card 1. -->
+            <div class="stack project-card" data-open="trailblazer-heroes" tabindex="0" role="button" aria-label="Open Trailblazer Heroes case study"> <!-- Case study card 2. data-open must match a project id in script.js. -->
+              <div class="placeholder thumbnail"> <!-- Thumbnail area. Swap for an <img> or <video> later. -->
+                <span class="placeholder-label">thumbnail</span> <!-- Placeholder word. -->
+                <span class="preview-label">preview loop playing</span> <!-- Shows on hover. -->
+              </div> <!-- End of thumbnail. -->
+              <b class="project-name">Trailblazer Heroes</b> <!-- Project name. -->
+              <p class="body-text small">Content research, writing, and the first-edition Curriculum Guide for The AAPI Card Game.</p> <!-- One-line description. -->
+              <ul class="tags" aria-label="Project type"><li>Learning</li><li>Card game</li></ul> <!-- Small tags that say what kind of project this is. Add or remove <li> items. -->
+            </div> <!-- End of case study card 2. -->
+            <div class="stack project-card" data-open="shifty-friend" tabindex="0" role="button" aria-label="Open Shifty Friend case study"> <!-- Case study card 3. data-open must match a project id in script.js. -->
+              <div class="placeholder thumbnail"> <!-- Thumbnail area. Swap for an <img> or <video> later. -->
+                <span class="placeholder-label">thumbnail</span> <!-- Placeholder word. -->
+                <span class="preview-label">preview loop playing</span> <!-- Shows on hover. -->
+              </div> <!-- End of thumbnail. -->
+              <b class="project-name">Shifty Friend</b> <!-- Project name. -->
+              <p class="body-text small">An AI interactive. One sentence about what players do and what it explores.</p> <!-- One-line description. -->
+              <ul class="tags" aria-label="Project type"><li>AI</li><li>Game</li></ul> <!-- Small tags that say what kind of project this is. Add or remove <li> items. -->
+            </div> <!-- End of case study card 3. -->
+            <div class="stack project-card" data-open="steamnasium" tabindex="0" role="button" aria-label="Open STEAMnasium Photo Booth and I Spy case study"> <!-- Case study card 4. data-open must match a project id in script.js. -->
+              <div class="placeholder thumbnail"> <!-- Thumbnail area. Swap for an <img> or <video> later. -->
+                <span class="placeholder-label">thumbnail</span> <!-- Placeholder word. -->
+                <span class="preview-label">preview loop playing</span> <!-- Shows on hover. -->
+              </div> <!-- End of thumbnail. -->
+              <b class="project-name">STEAMnasium Photo Booth and I Spy</b> <!-- Project name. -->
+              <p class="body-text small">Hands-on visitor experiences: a photo booth and an I Spy game with custom tools.</p> <!-- One-line description. -->
+              <ul class="tags" aria-label="Project type"><li>Physical</li><li>Learning</li></ul> <!-- Small tags that say what kind of project this is. Add or remove <li> items. -->
+            </div> <!-- End of case study card 4. -->
+          </div> <!-- End of the peek row. -->
+        </div> <!-- End of the peek carousel. -->
 
-          <div class="stack project-card" data-open="ar-history" tabindex="0" role="button" aria-label="Open Location-based AR history case study"> <!-- Project card 2. -->
-            <div class="placeholder thumbnail"> <!-- Thumbnail area. -->
-              <span class="placeholder-label">thumbnail</span> <!-- Placeholder word. -->
-              <span class="preview-label">preview loop playing</span> <!-- Shows on hover. -->
-            </div> <!-- End of thumbnail. -->
-            <b class="project-name">Location-based AR history</b> <!-- Project name. -->
-            <p class="body-text small">An augmented reality learning tour that connects communities to untold histories in public spaces.</p> <!-- Description. -->
-          </div> <!-- End of card 2. -->
-
-          <div class="stack project-card" data-open="project-three" tabindex="0" role="button" aria-label="Open Project three case study"> <!-- Project card 3. To add a 4th card, copy this whole block and paste it below. -->
-            <div class="placeholder thumbnail"> <!-- Thumbnail area. -->
-              <span class="placeholder-label">thumbnail</span> <!-- Placeholder word. -->
-              <span class="preview-label">preview loop playing</span> <!-- Shows on hover. -->
-            </div> <!-- End of thumbnail. -->
-            <b class="project-name">Project three</b> <!-- Project name. -->
-            <p class="body-text small">One or two sentences about the project, the tools used, and your role on the team.</p> <!-- Description. -->
-          </div> <!-- End of card 3. -->
-        </div> <!-- End of the project grid. -->
+        <div class="playground" id="playground"> <!-- PLAYGROUND: smaller projects, experiments, and prototypes. No full case study, just a picture and a line. -->
+          <div class="playground-top"> <!-- The heading row. -->
+            <h3 class="playground-title">Playground</h3> <!-- Heading for this group. -->
+            <p class="body-text small">Experiments, prototypes, and game jam builds.</p> <!-- A short line explaining what this group is. -->
+          </div> <!-- End of the heading row. -->
+          <div class="playground-grid"> <!-- The grid of small cards. It fits as many columns as the screen allows. -->
+            <div class="stack playground-card"> <!-- Playground card 1. -->
+              <div class="placeholder playground-thumb">image</div> <!-- Small picture area. -->
+              <b class="project-name">Alternative controller game</b> <!-- Project name. -->
+              <p class="body-text small">Game jam prototype. Best Alternative Controller, Global Game Jam 2024.</p> <!-- One-line description. -->
+              <ul class="tags" aria-label="Project type"><li>Game</li><li>Physical</li></ul> <!-- Small tags that say what kind of project this is. Add or remove <li> items. -->
+            </div> <!-- End of playground card 1. -->
+            <div class="stack playground-card"> <!-- Playground card 2. -->
+              <div class="placeholder playground-thumb">image</div> <!-- Small picture area. -->
+              <b class="project-name">Location-based AR history</b> <!-- Project name. -->
+              <p class="body-text small">Prototype and research poster, Connected Learning Summit 2025.</p> <!-- One-line description. -->
+              <ul class="tags" aria-label="Project type"><li>Learning</li><li>AR</li></ul> <!-- Small tags that say what kind of project this is. Add or remove <li> items. -->
+            </div> <!-- End of playground card 2. -->
+            <div class="stack playground-card"> <!-- Playground card 3. -->
+              <div class="placeholder playground-thumb">image</div> <!-- Small picture area. -->
+              <b class="project-name">See You In Court</b> <!-- Project name. -->
+              <p class="body-text small">A board game. One line about what players do.</p> <!-- One-line description. -->
+              <ul class="tags" aria-label="Project type"><li>Board game</li></ul> <!-- Small tags that say what kind of project this is. Add or remove <li> items. -->
+            </div> <!-- End of playground card 3. -->
+            <div class="stack playground-card"> <!-- Playground card 4. -->
+              <div class="placeholder playground-thumb">image</div> <!-- Small picture area. -->
+              <b class="project-name">Governors Island</b> <!-- Project name. -->
+              <p class="body-text small">A board game. One line about what players do.</p> <!-- One-line description. -->
+              <ul class="tags" aria-label="Project type"><li>Board game</li></ul> <!-- Small tags that say what kind of project this is. Add or remove <li> items. -->
+            </div> <!-- End of playground card 4. -->
+            <div class="stack playground-card"> <!-- Playground card 5. -->
+              <div class="placeholder playground-thumb">image</div> <!-- Small picture area. -->
+              <b class="project-name">Wishing Windchimes</b> <!-- Project name. -->
+              <p class="body-text small">A fabrication project. One line about it.</p> <!-- One-line description. -->
+              <ul class="tags" aria-label="Project type"><li>Physical</li></ul> <!-- Small tags that say what kind of project this is. Add or remove <li> items. -->
+            </div> <!-- End of playground card 5. -->
+            <div class="stack playground-card"> <!-- Playground card 6. -->
+              <div class="placeholder playground-thumb">image</div> <!-- Small picture area. -->
+              <b class="project-name">Circuit Sewing</b> <!-- Project name. -->
+              <p class="body-text small">Sewn circuits. One line about it.</p> <!-- One-line description. -->
+              <ul class="tags" aria-label="Project type"><li>Physical</li></ul> <!-- Small tags that say what kind of project this is. Add or remove <li> items. -->
+            </div> <!-- End of playground card 6. -->
+            <div class="stack playground-card"> <!-- Playground card 7. -->
+              <div class="placeholder playground-thumb">image</div> <!-- Small picture area. -->
+              <b class="project-name">Wood and Gear Work</b> <!-- Project name. -->
+              <p class="body-text small">Woodworking and gears. One line about it.</p> <!-- One-line description. -->
+              <ul class="tags" aria-label="Project type"><li>Physical</li></ul> <!-- Small tags that say what kind of project this is. Add or remove <li> items. -->
+            </div> <!-- End of playground card 7. -->
+            <div class="stack playground-card"> <!-- Playground card 8. -->
+              <div class="placeholder playground-thumb">image</div> <!-- Small picture area. -->
+              <b class="project-name">Graveyard</b> <!-- Project name. -->
+              <p class="body-text small">A Scratch click game.</p> <!-- One-line description. -->
+              <ul class="tags" aria-label="Project type"><li>Game</li></ul> <!-- Small tags that say what kind of project this is. Add or remove <li> items. -->
+            </div> <!-- End of playground card 8. -->
+            <div class="stack playground-card extra"> <!-- Playground card 9. "extra" hides it until Show all is clicked. Remove "extra" to always show a card. -->
+              <div class="placeholder playground-thumb">image</div> <!-- Small picture area. -->
+              <b class="project-name">Dino Tweak</b> <!-- Project name. -->
+              <p class="body-text small">A Scratch click game.</p> <!-- One-line description. -->
+              <ul class="tags" aria-label="Project type"><li>Game</li></ul> <!-- Small tags that say what kind of project this is. Add or remove <li> items. -->
+            </div> <!-- End of playground card 9. -->
+            <div class="stack playground-card extra"> <!-- Playground card 10. -->
+              <div class="placeholder playground-thumb">image</div> <!-- Small picture area. -->
+              <b class="project-name">Dark Romance</b> <!-- Project name. -->
+              <p class="body-text small">A Unity game.</p> <!-- One-line description. -->
+              <ul class="tags" aria-label="Project type"><li>Game</li></ul> <!-- Small tags that say what kind of project this is. Add or remove <li> items. -->
+            </div> <!-- End of playground card 10. -->
+            <div class="stack playground-card extra"> <!-- Playground card 11. -->
+              <div class="placeholder playground-thumb">image</div> <!-- Small picture area. -->
+              <b class="project-name">Missing Sister</b> <!-- Project name. -->
+              <p class="body-text small">A Unity game.</p> <!-- One-line description. -->
+              <ul class="tags" aria-label="Project type"><li>Game</li></ul> <!-- Small tags that say what kind of project this is. Add or remove <li> items. -->
+            </div> <!-- End of playground card 11. -->
+          </div> <!-- End of the playground grid. -->
+          <button class="glow-button playground-toggle" id="playground-toggle" aria-expanded="false">Show all</button> <!-- Shows or hides the extra cards. script.js changes its words. -->
+        </div> <!-- End of the playground. -->
       </div> <!-- End of section-inner. -->
     </section> <!-- End of the Work section. -->
 

@@ -45,13 +45,13 @@ const RESPAWN_SPOTS = [[8, 18], [92, 20], [7, 80], [93, 84]];   // Where the bal
 
 const HOPS_BEFORE_TANTRUM = 3;   // How many touches it allows before it gets mad.
 const HOP_TIME = 1800;           // How long one hop takes, in milliseconds (1000 = 1 second).
-const FLY_IN_TIME = 2600;        // How long it takes to float into the next section.
-const DRIFT_TIME = 6000;         // How long it takes to lazily follow you.
-const RISE_TIME = 1600;          // How long it shakes and rises before zooming.
+const FLY_IN_TIME = 3500;        // How long it takes to float into the next section.
+const DRIFT_TIME = 4000;         // How long it takes to lazily follow you.
+const RISE_TIME = 1500;          // How long it shakes and rises before zooming.
 const WINDUP_TIME = 380;         // The quick squash before the zoom.
-const ZOOM_TIME = 800;           // How long the zoom away takes.
+const ZOOM_TIME = 900;           // How long the zoom away takes.
 const FIREWORKS_TIME = 3600;     // How long the fireworks show lasts before it re-forms.
-const FOLLOW_WAIT = 1800;        // How long it waits after you stop scrolling before it follows you.
+const FOLLOW_WAIT = 1200;        // How long it waits after you stop scrolling before it follows you.
 
 
 // ---------------------------------------------------------------------
@@ -326,7 +326,7 @@ function makeFireworks(center) {                               // The explosion 
       look: 'spark'                                            // drawn as streaks.
     });                                                        // End of this spark.
   }                                                            // End of loop.
-}                                                              // End of makeFireworks.
+}                                                              // End of makeFireworks.                                                             // End of makeFireworks.
 
 function makeGatherEffect(center) {                            // Sparkles pulling in when the ball re-forms.
   for (let i = 0; i < 70; i++) {                               // 70 sparkles.
@@ -440,8 +440,8 @@ function moveBall(now) {                                   // Runs every frame t
 
   const shouldFloat = !(ballHas('is-zooming') || ballHas('is-winding-up') || ballIsGone() || ballHas('is-forming') || lessMotion); // Float unless doing something dramatic.
   floatAmount = floatAmount + ((shouldFloat ? 1 : 0) - floatAmount) * 0.08;   // Ease the float on or off slowly.
-  const floatX = (Math.sin(now / 2100) * 9 + Math.sin(now / 1200 + 1.3) * 3.5) * floatAmount;   // Lazy left-right drift (two waves mixed).
-  const floatY = (Math.cos(now / 2500) * 10 + Math.sin(now / 1400) * 3) * floatAmount;          // Lazy up-down drift.
+  const floatX = (Math.sin(now / 2100) * 11 + Math.sin(now / 1200 + 1.3) * 3.5) * floatAmount;   // Lazy left-right drift (two waves mixed).
+  const floatY = (Math.cos(now / 2500) * 11 + Math.sin(now / 1400) * 3) * floatAmount;          // Lazy up-down drift.
   ball.style.left = (ballPosition.x + floatX) + 'px';      // Put the ball there (left side).
   ball.style.top = (ballPosition.y + floatY) + 'px';       // Put the ball there (top side).
 }                                                          // End of moveBall.
@@ -695,12 +695,70 @@ setInterval(function () {                                  // setInterval repeat
 
 
 // ---------------------------------------------------------------------
+// 9b. PEEK CAROUSEL (the sideways row of project cards)
+// ---------------------------------------------------------------------
+
+const projectRow = document.getElementById('project-row');                  // The scrolling row of cards.
+const peekArrows = Array.from(document.querySelectorAll('.peek-arrow'));    // The two arrow buttons: [left, right].
+const peekControls = document.querySelector('.peek-controls');              // The box holding both arrows.
+
+function scrollProjects(direction) {                       // Scrolls the row one card left (-1) or right (1).
+  const firstCard = projectRow.querySelector('.project-card');   // Any card works; they are all the same width.
+  const gap = parseFloat(getComputedStyle(projectRow).columnGap) || 18;   // The space between cards, read from style.css.
+  const oneCard = firstCard.getBoundingClientRect().width + gap;          // How far one card step is.
+  projectRow.scrollBy({ left: oneCard * direction });      // Scroll by one card. style.css makes it glide smoothly.
+}                                                          // End of scrollProjects.
+
+function updatePeekArrows() {                              // Fades out an arrow when there is nowhere left to go.
+  const atStart = projectRow.scrollLeft <= 2;              // Scrolled all the way left?
+  const atEnd = projectRow.scrollLeft + projectRow.clientWidth >= projectRow.scrollWidth - 2;   // Scrolled all the way right?
+  peekArrows[0].disabled = atStart;                        // Left arrow off at the start.
+  peekArrows[1].disabled = atEnd;                          // Right arrow off at the end.
+  peekControls.hidden = atStart && atEnd;                  // If every card already fits, hide both arrows.
+}                                                          // End of updatePeekArrows.
+
+peekArrows.forEach(function (arrow) {                      // For each arrow...
+  arrow.addEventListener('click', function () {            // ...when clicked...
+    scrollProjects(Number(arrow.dataset.direction));       // ...scroll in its direction.
+  });                                                      // End of this step.
+});                                                        // End of this step.
+
+projectRow.addEventListener('scroll', updatePeekArrows, { passive: true });   // Re-check the arrows whenever the row scrolls.
+window.addEventListener('resize', updatePeekArrows);       // Re-check when the window changes size.
+updatePeekArrows();                                        // Check once at the start.
+
+
+// ---------------------------------------------------------------------
+// 10b. PLAYGROUND "SHOW ALL" BUTTON
+// ---------------------------------------------------------------------
+
+const playground = document.getElementById('playground');               // The Playground group.
+const playgroundToggle = document.getElementById('playground-toggle');  // The Show all button.
+const extraCards = playground.querySelectorAll('.playground-card.extra').length;   // How many cards are hidden at first.
+const totalCards = playground.querySelectorAll('.playground-card').length;        // How many cards there are in all.
+
+function updatePlaygroundButton() {                        // Sets the button's words.
+  const open = playground.classList.contains('show-all');  // Are all cards showing?
+  playgroundToggle.textContent = open ? 'Show fewer' : 'Show all ' + totalCards;   // "Show all 11" or "Show fewer."
+  playgroundToggle.setAttribute('aria-expanded', open ? 'true' : 'false');   // Tells screen readers whether it is open.
+  playgroundToggle.hidden = extraCards === 0;              // No hidden cards? No button needed.
+}                                                          // End of updatePlaygroundButton.
+
+playgroundToggle.addEventListener('click', function () {   // When the button is clicked...
+  playground.classList.toggle('show-all');                 // ...show or hide the extra cards (style.css does the hiding)...
+  updatePlaygroundButton();                                // ...and update the words.
+});                                                        // End of this step.
+
+updatePlaygroundButton();                                  // Set the words once at the start.
+
+
+// ---------------------------------------------------------------------
 // 10. CASE STUDY POP-UP
 // Each project's words live here. Add a new project by copying one block.
 // The id (like 'dsff') must match data-open="dsff" in index.html.
 // ---------------------------------------------------------------------
 
-const PROJECTS = {                                         // All the case studies.
+const PROJECTS = {                                         // All the case studies. Each id must match data-open="..." in index.html.
   'dsff': {                                                // Project id.
     title: 'Dark Scenes with the Fear Forge',              // Title on the wall label.
     year: '2026',                                          // Year.
@@ -708,50 +766,67 @@ const PROJECTS = {                                         // All the case studi
     role: 'Your role',                                     // Your role.
     note: 'A horror card game and handcrafted sound instrument that helps children ages 8 to 12 build emotional resilience.',   // One-sentence description.
     sections: [                                            // The story parts. Each is [heading, the HTML inside it].
-      ['Overview', '<p class="body-text">A handcrafted, coffin-shaped sound instrument and horror card game that helps children ages 8 to 12 build emotional resilience. Players face their fears together through sound, story, and play.</p>'],  // Same pattern as the first project above.
-      ['Process', '<p class="body-text">Two or three short paragraphs on research, early sketches, and how the instrument and card game came together.</p><div class="project-grid"><div class="placeholder" style="aspect-ratio:4/3">sketch</div><div class="placeholder" style="aspect-ratio:4/3">prototype</div><div class="placeholder" style="aspect-ratio:4/3">build</div></div>'],  // Same pattern as the first project above.
-      ['Outcomes', '<p class="body-text">Results, what you would do next, and what you learned as a designer.</p>']  // Same pattern as the first project above.
-    ]                                                     // Same pattern as the first project above.
-  },                                                      // Same pattern as the first project above.
-  'career-explorer': {                                    // Same pattern as the first project above.
-    title: 'Game Career Explorer',                        // Same pattern as the first project above.
-    year: '2026',                                         // Same pattern as the first project above.
-    materials: 'HTML, CSS, JavaScript, Unity',            // Same pattern as the first project above.
-    role: 'Lead developer and experience designer, Harlem Gallery of Science',  // Same pattern as the first project above.
-    note: 'An interactive web experience that simulates a game studio internship across seven departments.',  // Same pattern as the first project above.
-    sections: [                                           // Same pattern as the first project above.
-      ['Overview', '<p class="body-text">An interactive web experience that simulates a game studio internship across seven departments, with an integrated Unity demo game.</p>'],  // Same pattern as the first project above.
-      ['Process', '<p class="body-text">How you mapped studio roles into playable moments.</p><div class="project-grid"><div class="placeholder" style="aspect-ratio:4/3">sketch</div><div class="placeholder" style="aspect-ratio:4/3">prototype</div><div class="placeholder" style="aspect-ratio:4/3">build</div></div>'],  // Same pattern as the first project above.
-      ['Outcomes', '<p class="body-text">Feedback, results, and next steps.</p>']  // Same pattern as the first project above.
-    ]                                                     // Same pattern as the first project above.
-  },                                                      // Same pattern as the first project above.
-  'ar-history': {                                         // Same pattern as the first project above.
-    title: 'Location-based AR history',                   // Same pattern as the first project above.
-    year: '2025',                                         // Same pattern as the first project above.
-    materials: 'Tools used',                              // Same pattern as the first project above.
-    role: 'Your role. Shown at the Connected Learning Summit, 2025',  // Same pattern as the first project above.
-    note: 'An augmented reality learning tour that connects communities to untold histories in public spaces.',  // Same pattern as the first project above.
-    sections: [                                           // Same pattern as the first project above.
-      ['Overview', '<p class="body-text">An augmented reality learning tour that connects communities to untold histories in public spaces.</p>'],  // Same pattern as the first project above.
-      ['Process', '<p class="body-text">How you chose sites, built the AR layer, and tested on location.</p><div class="project-grid"><div class="placeholder" style="aspect-ratio:4/3">sketch</div><div class="placeholder" style="aspect-ratio:4/3">prototype</div><div class="placeholder" style="aspect-ratio:4/3">build</div></div>'],  // Same pattern as the first project above.
-      ['Outcomes', '<p class="body-text">Results and reflections.</p>']  // Same pattern as the first project above.
-    ]                                                     // Same pattern as the first project above.
-  },                                                      // Same pattern as the first project above.
-  'project-three': {                                      // Same pattern as the first project above.
-    title: 'Project three',                               // Same pattern as the first project above.
-    year: 'Year',                                         // Same pattern as the first project above.
-    materials: 'Tools used',                              // Same pattern as the first project above.
-    role: 'Your role',                                    // Same pattern as the first project above.
-    note: 'A one-line hook for this project.',            // Same pattern as the first project above.
-    sections: [                                           // Same pattern as the first project above.
-      ['Overview', '<p class="body-text">One or two sentences about the project, the tools used, and your role on the team.</p>'],  // Same pattern as the first project above.
-      ['Process', '<p class="body-text">Two or three short paragraphs on research, early sketches, and how the project came together.</p><div class="project-grid"><div class="placeholder" style="aspect-ratio:4/3">sketch</div><div class="placeholder" style="aspect-ratio:4/3">prototype</div><div class="placeholder" style="aspect-ratio:4/3">build</div></div>'],  // Same pattern as the first project above.
-      ['Outcomes', '<p class="body-text">What happened and what you learned.</p>']  // Same pattern as the first project above.
-    ]                                                     // Same pattern as the first project above.
-  }                                                       // Same pattern as the first project above.
+      ['Overview', '<p class="body-text">A handcrafted, coffin-shaped sound instrument and horror card game that helps children ages 8 to 12 build emotional resilience. Players face their fears together through sound, story, and play.</p>'],
+      ['Process', '<p class="body-text">Two or three short paragraphs on research, early sketches, and how the instrument and card game came together.</p><div class="project-grid"><div class="placeholder" style="aspect-ratio:4/3">sketch</div><div class="placeholder" style="aspect-ratio:4/3">prototype</div><div class="placeholder" style="aspect-ratio:4/3">build</div></div>'],
+      ['Playtest', '<p class="body-text">Who played, what you watched for, and the moments that surprised you. A pull quote from a player works well here.</p><div class="placeholder" style="aspect-ratio:16/9">playtest photo or clip</div>'],
+      ['Outcomes', '<p class="body-text">Results from playtest data, what you would do next, and what you learned as a designer.</p>']
+    ]
+  },
+  'career-explorer': {                                     // Game Career Explorer.
+    title: 'Game Career Explorer',
+    year: '2026',
+    materials: 'HTML, CSS, JavaScript, Unity',
+    role: 'Lead developer and experience designer, Harlem Gallery of Science',
+    note: 'An interactive web experience that simulates a game studio internship across seven departments, ending in the Unity demo game Patch and Watt: Split Spark.',
+    sections: [
+      ['Overview', '<p class="body-text">An interactive web experience that simulates a game studio internship across seven departments. Visitors earn a badge for each department, then play a Unity demo game that ties their learning together.</p>'],
+      ['Process', '<p class="body-text">How you mapped studio roles into playable moments and built the badge system.</p>'],
+      ['Patch and Watt: Split Spark', '<p class="body-text">The capstone Unity demo game, and how it connects to what visitors learned.</p>'],
+      ['Outcomes', '<p class="body-text">Feedback, results, and next steps.</p>']
+    ]
+  },
+  'trailblazer-heroes': {                                  // Trailblazer Heroes. You did not create the game, so "credit" says who did.
+    title: 'Trailblazer Heroes: The AAPI Card Game',
+    year: 'Year',
+    credit: 'Game by [creator]. Curriculum Guide by Brandy Coleman.',   // Replaces the usual "Brandy Coleman, year" line. Put the creator's name in.
+    materials: 'Printed card game and curriculum guide',
+    role: 'Content research and writing lead; author of the first-edition Curriculum Guide',
+    note: 'A card game celebrating Asian American and Pacific Islander trailblazers. My work: the research, the writing, and the guide that brings it into classrooms.',
+    sections: [
+      ['Overview', '<p class="body-text">What the game is, who it is for, and who created it.</p>'],
+      ['My role', '<p class="body-text">How you led the content research and writing team.</p>'],
+      ['The Curriculum Guide', '<p class="body-text">How you designed the first-edition guide for teachers.</p><div class="placeholder" style="aspect-ratio:16/9">guide pages</div>'],
+      ['Impact', '<p class="body-text">Over 100 units sold. Add any feedback from teachers or players.</p>']
+    ]
+  },
+  'shifty-friend': {                                       // Shifty Friend.
+    title: 'Shifty Friend',
+    year: 'Year',
+    materials: 'Tools used',
+    role: 'Your role',
+    note: 'An AI interactive. One sentence about what players do and what it explores.',
+    sections: [
+      ['Overview', '<p class="body-text">What players do, and the question the piece explores.</p>'],
+      ['Designing the AI character', '<p class="body-text">How you shaped its personality, rules, and limits.</p>'],
+      ['Outcomes', '<p class="body-text">What players did and what you learned.</p>']
+    ]
+  },
+  'steamnasium': {                                         // STEAMnasium photo booth and I Spy.
+    title: 'STEAMnasium Photo Booth and I Spy',
+    year: 'Year',
+    materials: 'Fabrication, tools used',
+    role: 'Your role',
+    note: 'Hands-on visitor experiences: a photo booth and an I Spy game with custom tools.',
+    sections: [
+      ['Overview', '<p class="body-text">Where these lived and who used them.</p>'],
+      ['The photo booth', '<p class="body-text">How you designed and built it.</p><div class="placeholder" style="aspect-ratio:16/9">photo booth</div>'],
+      ['The I Spy game and tools', '<p class="body-text">How the game worked and what you made for it.</p>'],
+      ['Outcomes', '<p class="body-text">How visitors responded.</p>']
+    ]
+  }
 };                                                         // End of PROJECTS.
 
-const PROJECT_ORDER = ['dsff', 'career-explorer', 'ar-history', 'project-three'];   // The order the "Next" button follows.
+const PROJECT_ORDER = ['dsff', 'career-explorer', 'trailblazer-heroes', 'shifty-friend', 'steamnasium'];   // The order the "Next" button follows.
 
 const popup = document.getElementById('case-study');       // The pop-up cover.
 const popupPanel = document.getElementById('case-study-panel');   // The sliding panel.
@@ -777,7 +852,7 @@ function fillPopup(id) {                                   // Puts a project's w
   const project = PROJECTS[id];                            // Look up the project.
   openProjectId = id;                                      // Remember it.
   document.getElementById('case-title').textContent = project.title;                    // Title.
-  document.getElementById('case-credit').textContent = 'Brandy Coleman, ' + project.year; // Credit line.
+  document.getElementById('case-credit').textContent = project.credit || ('Brandy Coleman, ' + project.year); // Credit line.
   document.getElementById('case-materials').textContent = project.materials;            // Materials.
   document.getElementById('case-role').textContent = project.role;                      // Role.
   document.getElementById('case-note').textContent = project.note;                      // Description.

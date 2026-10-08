@@ -469,6 +469,158 @@ button.thumbnail:focus-visible {                /* ...or the featured image: */
 
 
 /* ---------------------------------------------------------------------
+   9b. PEEK CAROUSEL (the sideways row of project cards)
+   --------------------------------------------------------------------- */
+.peek-carousel {                                /* Holds the arrows and the row. */
+  display: grid;                                /* Stacks the arrows above the row. */
+  gap: 12px;                                    /* Space between the arrows and the row. */
+  --card-gap: 18px;                             /* Space between cards. Used in the math below, so change it here only. */
+}
+
+.peek-controls {                                /* The arrow buttons. */
+  display: flex;                                /* In a row. */
+  justify-content: flex-end;                    /* Pushed to the right side. */
+  gap: 8px;                                     /* Space between the two arrows. */
+}
+
+.peek-controls[hidden] {                        /* script.js hides the arrows when every card already fits. */
+  display: none;                                /* Gone. */
+}
+
+.peek-arrow {                                   /* One arrow button. */
+  width: 40px;                                  /* Width. */
+  height: 40px;                                 /* Height. */
+  border-radius: 50%;                           /* Round. */
+  border: 1px solid var(--pink-faint);          /* Soft pink outline, like the glow buttons. */
+  background: transparent;                      /* See-through. */
+  color: var(--text);                           /* Arrow color. */
+  font: 400 16px/1 var(--font-sans);            /* Arrow size. */
+  cursor: pointer;                              /* Pointing hand. */
+  transition: border-color 0.3s, box-shadow 0.3s, opacity 0.3s;   /* Changes fade in. */
+}
+
+.peek-arrow:hover,                              /* Hovering an arrow... */
+.peek-arrow:focus-visible {                     /* ...or selecting it with the keyboard: */
+  border-color: var(--pink);                    /* brighter outline, */
+  box-shadow: 0 0 10px rgba(240, 141, 190, 0.45), 0 0 22px rgba(240, 141, 190, 0.2);   /* and the pink glow. */
+  outline: none;                                /* The glow shows focus, so no extra ring. */
+}
+
+.peek-arrow:disabled {                          /* An arrow with nowhere left to go... */
+  opacity: 0.3;                                 /* ...fades out... */
+  cursor: default;                              /* ...shows the normal cursor... */
+  box-shadow: none;                             /* ...and does not glow. */
+  border-color: var(--pink-faint);              /* Back to the soft outline. */
+}
+
+.peek-row {                                     /* The scrolling row of cards. */
+  display: flex;                                /* Cards in one line. */
+  gap: var(--card-gap);                         /* Space between cards. */
+  overflow-x: auto;                             /* Lets the row scroll sideways. */
+  scroll-snap-type: x mandatory;                /* After scrolling, a card always snaps neatly to the left edge. */
+  scroll-behavior: smooth;                      /* Arrow clicks glide instead of jumping. */
+  overscroll-behavior-x: contain;               /* Swiping past the end does not swipe the whole page. */
+  scrollbar-width: none;                        /* Hides the scrollbar (Firefox). People swipe or use the arrows. */
+  padding: 6px 4px;                             /* A little room so the pink focus ring is not cut off... */
+  margin: -6px -4px;                            /* ...without changing where the row sits. */
+  scroll-padding-inline: 4px;                   /* Tells the snapping about that padding, so cards line up with the page edge. */
+}
+
+.peek-row::-webkit-scrollbar {                  /* The scrollbar in Chrome and Safari. */
+  display: none;                                /* Hidden there too. */
+}
+
+.peek-row > .project-card {                     /* Each card in the row. */
+  flex: 0 0 calc((100% - var(--card-gap) * 2) / 2.3);   /* Laptop and desktop: 2 full cards plus about a third of the next. */
+  scroll-snap-align: start;                     /* This card's left edge is a snap point. */
+}
+
+@media (max-width: 640px) {                     /* Phones and narrow screens: */
+  .peek-row > .project-card {
+    flex-basis: 82%;                            /* 1 full card plus a peek of the next. */
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {       /* For less motion: */
+  .peek-row { scroll-behavior: auto; }          /* Arrow clicks jump instead of gliding. */
+}
+
+
+/* ---------------------------------------------------------------------
+   9c. TAGS AND PLAYGROUND
+   --------------------------------------------------------------------- */
+.tags {                                         /* A row of small tags like GAME or PHYSICAL. */
+  display: flex;                                /* In a row. */
+  flex-wrap: wrap;                              /* Wraps to a new line if needed. */
+  gap: 6px;                                     /* Space between tags. */
+  list-style: none;                             /* No bullet points. */
+  margin: 2px 0 0;                              /* A tiny bit of space above. */
+  padding: 0;                                   /* No extra inside space. */
+}
+
+.tags li {                                      /* One tag. */
+  font: 500 10px/1 var(--font-sans);            /* Tiny, medium weight. */
+  letter-spacing: 0.1em;                        /* Spread out. */
+  text-transform: uppercase;                    /* ALL CAPS. */
+  color: var(--text-soft);                      /* Quiet color. */
+  border: 1px solid var(--line);                /* Thin outline. */
+  border-radius: 999px;                         /* Pill shape. */
+  padding: 5px 8px;                             /* Inner space. */
+}
+
+.playground {                                   /* The whole Playground group. */
+  display: grid;                                /* Stacks the heading, grid, and button. */
+  gap: 18px;                                    /* Space between them. */
+  padding-top: 28px;                            /* Space above... */
+  border-top: 1px solid var(--line);            /* ...and a thin line, so it reads as its own group. */
+}
+
+.playground-top {                               /* The heading row. */
+  display: flex;                                /* Heading and line side by side. */
+  flex-wrap: wrap;                              /* Stacks on small screens. */
+  align-items: baseline;                        /* Lines up the bottoms of the words. */
+  gap: 6px 16px;                                /* Space between them. */
+}
+
+.playground-title {                             /* The word "Playground." */
+  margin: 0;                                    /* No extra space. */
+  font: 500 24px/1.2 var(--font-serif);         /* Fancy font, 24px. */
+  font-variation-settings: 'SOFT' 100;          /* Soft letters. */
+}
+
+.playground-grid {                              /* The grid of small cards. */
+  display: grid;                                /* Uses a grid. */
+  grid-template-columns: repeat(4, minmax(0, 1fr));   /* 4 cards per row on laptops. The first 8 fill two rows evenly. */
+  gap: 22px 16px;                               /* 22px between rows, 16px between columns. */
+}
+
+.playground-thumb {                             /* A small card's picture area. */
+  aspect-ratio: 4 / 3;                          /* A slightly squarer shape than the case studies, so they read as smaller pieces. */
+  width: 100%;                                  /* Fills the card. */
+}
+
+@media (max-width: 720px) {                     /* Tablets and phones: */
+  .playground-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }   /* 2 per row, so the first 8 make four even rows. */
+}
+
+.playground-card .project-name {                /* Names on small cards. */
+  font-size: 14px;                              /* A little smaller than case study names. */
+}
+
+.playground-card .body-text.small {             /* Descriptions on small cards. */
+  font-size: 13px;                              /* A little smaller. */
+}
+
+.playground:not(.show-all) .playground-card.extra {   /* Until "Show all" is clicked... */
+  display: none;                                /* ...the extra cards are hidden. */
+}
+
+.playground-toggle {                            /* The Show all button. */
+  justify-self: center;                         /* Centered under the grid. */
+}
+
+
+/* ---------------------------------------------------------------------
    10. CASE STUDY POP-UP
    --------------------------------------------------------------------- */
 .case-study {                                   /* The dark see-through cover behind the panel. */
