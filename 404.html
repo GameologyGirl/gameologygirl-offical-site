@@ -1,0 +1,62 @@
+<!doctype html> <!-- This page shows when someone visits a web address on your site that does not exist. GitHub Pages finds it automatically by its name, 404.html. -->
+<html lang="en"> <!-- The start of the page. -->
+<head> <!-- Behind-the-scenes info. -->
+  <meta charset="utf-8"> <!-- Shows every kind of letter correctly. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- Fits phone screens. -->
+  <title>Page not found | Brandy Coleman</title> <!-- The browser tab name. -->
+  <meta name="robots" content="noindex"> <!-- Asks Google not to list this page in search results. -->
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml"> <!-- Same tab icon as the main site. The "/" means "from the top of the site." -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"> <!-- Loads fonts faster. -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> <!-- Same idea. -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,500,100;1,9..144,400,100&family=DM+Sans:opsz,wght@9..40,400;9..40,500&display=swap"> <!-- The same two fonts as the main site. -->
+  <style> /* This page is tiny, so its styles live right here instead of in style.css. */
+    body {                                        /* The whole page. */
+      margin: 0;                                  /* No gap around the edges. */
+      min-height: 100vh;                          /* At least as tall as the screen. */
+      display: grid;                              /* Lets us center everything... */
+      place-items: center;                        /* ...in the middle of the screen. */
+      padding: 24px 16px;                         /* Keeps text off the edges on phones. */
+      box-sizing: border-box;                     /* Padding counts inside the height. */
+      background: radial-gradient(ellipse at 50% 40%, #29252E 0%, #17151A 60%, #0B0A0D 100%);   /* The site's purple fading to dark. */
+      color: #EFE9EF;                             /* Soft white text. */
+      font-family: 'DM Sans', system-ui, sans-serif;   /* Body font, with backups. */
+      text-align: center;                         /* Centered text. */
+    }   /* End of the body rule. */
+    main { display: grid; gap: 18px; justify-items: center; max-width: 34rem; }   /* Stacks everything with even space. */
+    .ball {                                       /* A small, still ball of light, like the one on the main page. */
+      width: 12px; height: 12px; border-radius: 50%;   /* A tiny circle. */
+      background: radial-gradient(circle, #fff 0 22%, #F2FEFF 50%, rgba(255,255,255,0) 100%);   /* White center fading out. */
+      box-shadow: 0 0 4px #fff, 0 0 10px #F2FEFF, 0 0 20px rgba(159,243,255,.5), 0 0 34px rgba(159,243,255,.2);   /* The glow. */
+      margin-bottom: 10px;                        /* A little space under it. */
+    }   /* End of the .ball rule. */
+    .label { font: 500 13px/1 'DM Sans', system-ui, sans-serif; letter-spacing: .12em; text-transform: uppercase; color: #BDB3BF; }   /* "404" in the small-label style. */
+    h1 { margin: 0; font: 500 clamp(30px, 6vw, 44px)/1.1 'Fraunces', Georgia, serif; font-variation-settings: 'SOFT' 100; }   /* The big heading. */
+    p { margin: 0; font-size: 16px; line-height: 1.65; color: #D8CFD9; }   /* The sentence. */
+    a {                                           /* The glowing pill button, same as the main site. */
+      margin-top: 8px;                            /* A little space above the button. */
+      display: inline-block;                      /* Lets a link look like a button. */
+      font: 500 13px/1 'DM Sans', system-ui, sans-serif;   /* 13px body font, medium weight. */
+      letter-spacing: .03em;                      /* Tiny space between letters. */
+      color: #EFE9EF;                             /* Soft white text. */
+      text-decoration: none;                      /* No underline. */
+      border: 1px solid rgba(240,141,190,.55);    /* Soft pink outline. */
+      border-radius: 999px;                       /* Round pill ends. */
+      padding: 11px 18px;                         /* Inner space: 11 top and bottom, 18 on the sides. */
+      transition: border-color .3s ease, box-shadow .3s ease;   /* The glow fades in. */
+    }   /* End of the a rule. */
+    a:hover, a:focus-visible {                    /* Hover or keyboard focus: */
+      border-color: #F08DBE; outline: none;       /* brighter pink outline, */
+      box-shadow: 0 0 10px rgba(240,141,190,.45), 0 0 22px rgba(240,141,190,.2), inset 0 0 8px rgba(240,141,190,.2);   /* and the pink glow. */
+    }   /* End of the a:hover, a:focus-visible rule. */
+  </style> <!-- End of the styles. -->
+</head> <!-- End of the behind-the-scenes part. -->
+<body> <!-- Everything visitors see goes inside body. -->
+  <main> <!-- The message. -->
+    <div class="ball" aria-hidden="true"></div> <!-- The little ball of light. aria-hidden means screen readers skip it. -->
+    <span class="label">404</span> <!-- 404 is the web's code for "page not found." -->
+    <h1>This page wandered off</h1> <!-- The heading. -->
+    <p>The link may be mistyped, or the page may have moved. Everything is still on the main page.</p> <!-- The sentence. -->
+    <a href="/">Back to the portfolio</a> <!-- "/" means the home page of your site. -->
+  </main> <!-- End of the message. -->
+</body> <!-- End of what visitors see. -->
+</html> <!-- End of the page. -->

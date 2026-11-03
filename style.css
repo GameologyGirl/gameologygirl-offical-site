@@ -4,6 +4,28 @@
    Anything between a slash-star and a star-slash is a note for people. The browser skips it.
    How a rule works:   .thing { property: value; }
    ".thing" picks which part of the page to style. Each property changes one look.
+
+   WORD HELPER (what the code words mean):
+   px      = pixels, the tiny dots on a screen. 16px is normal text size.
+   em      = "times the letter size." 0.1em is a tenth of one letter.
+   %       = percent, part of the whole space. 100% = all of it.
+   vh      = percent of the screen's height. 10vh = one tenth of the screen tall.
+   clamp(small, middle, big) = "use the middle number, but never go smaller
+             than small or bigger than big."
+   var(--name) = uses a saved setting from section 1, like a color.
+   rgba(red, green, blue, see-through) = a color mixed from red, green,
+             and blue (0 to 255). The last number is how solid it is: 0 to 1.
+   #about  = only the part of the page with id="about".
+   .name   = every part with class="name".
+   :hover  = "when the mouse is on top of it."
+   @media (max-width: 640px) = "only on screens 640 pixels wide or smaller,"
+             which means phones.
+
+   SAFE EDITING RULES:
+   - Change the numbers and colors. Keep the colons ( : ) and the
+     semicolons ( ; ) at the end of each line.
+   - Every { needs a matching }. Do not delete them.
+   - Made a mistake? Press Ctrl+Z (Cmd+Z on a Mac) to undo.
    ===================================================================== */
 
 
@@ -17,7 +39,7 @@
   --text-body: #D8CFD9;                         /* Paragraph text color. */
   --line: #443C48;                              /* Color of thin borders and divider lines. */
   --card: #1F1B22;                              /* Background color for placeholder boxes. */
-  --page: #26222A;                              /* Page background (the top of the page). */
+  --page: #29252E;                              /* Page background (the top of the page). Matches the first color in BACKGROUND_COLORS in script.js. */
   --pink: #F08DBE;                              /* Our accent pink. Change this to change every pink thing. */
   --pink-faint: rgba(240, 141, 190, 0.55);      /* A see-through pink for resting button outlines. */
   --font-sans: 'DM Sans', system-ui, sans-serif;            /* Body font. The fonts after the comma are backups. */
@@ -29,7 +51,7 @@
   --shake-size: 3px;                            /* How far the ball wiggles when it shakes. */
   --flicker-speed: 2.2s;                        /* How long one flicker takes. Smaller number = faster. */
   --pulse-speed: 1.6s;                          /* How long one glow pulse takes. Smaller number = faster. */
-}
+}   /* End of the Easy Settings. */
 
 
 /* ---------------------------------------------------------------------
@@ -37,7 +59,7 @@
    --------------------------------------------------------------------- */
 * {                                             /* * means "every element on the page." */
   box-sizing: border-box;                       /* Makes widths include padding and borders, which is much easier to plan. */
-}
+}   /* End of the every-element rule. */
 
 body {                                          /* The visible page. */
   margin: 0;                                    /* Removes the browser's default gap around the page. */
@@ -46,11 +68,11 @@ body {                                          /* The visible page. */
   font-family: var(--font-sans);                /* Default font. */
   font-size: 16px;                              /* Default text size. */
   line-height: 1.6;                             /* Space between lines of text. 1.6 means 1.6 times the text size. */
-}
+}   /* End of the body rule. */
 
 html.no-scroll {                                /* script.js adds "no-scroll" while a case study is open. */
   overflow: hidden;                             /* Stops the page behind the pop-up from scrolling. */
-}
+}   /* End of the html.no-scroll rule. */
 
 
 /* ---------------------------------------------------------------------
@@ -60,8 +82,8 @@ html.no-scroll {                                /* script.js adds "no-scroll" wh
   position: fixed;                              /* "fixed" means it stays still while the page scrolls. */
   inset: 0;                                     /* Stretches it to all four edges of the screen. */
   z-index: 0;                                   /* z-index is stacking order. 0 is the bottom layer. */
-  background: #26222A;                          /* Starting color. script.js changes this as you scroll. */
-}
+  background: var(--page);                      /* Starting color (from Easy Settings). script.js changes this as you scroll. */
+}   /* End of the #background-color-layer rule. */
 
 #sparkle-canvas {                               /* The drawing board for sparkles and fireworks. */
   position: fixed;                              /* Stays still on screen. */
@@ -70,7 +92,7 @@ html.no-scroll {                                /* script.js adds "no-scroll" wh
   height: 100%;                                 /* Full height. */
   z-index: 15;                                  /* Sits above the page content so sparkles show on top. */
   pointer-events: none;                         /* Lets clicks pass right through it, like it is not there. */
-}
+}   /* End of the #sparkle-canvas rule. */
 
 
 /* ---------------------------------------------------------------------
@@ -91,7 +113,7 @@ header {                                        /* The floating header. */
     rgba(12, 10, 13, 0.55) 68%,                 /* Half see-through. */
     rgba(12, 10, 13, 0) 100%                    /* Fully clear at the bottom of the header. */
   );                                            /* End of the fade. */
-}
+}   /* End of the header rule. */
 
 .header-inner {                                 /* A . picks elements by class. This box lines up the logo and menu. */
   max-width: 1080px;                            /* Never wider than 1080 pixels. */
@@ -100,11 +122,11 @@ header {                                        /* The floating header. */
   display: flex;                                /* flex lines things up in a row. */
   align-items: center;                          /* Centers them up and down. */
   gap: 20px;                                    /* Space between the logo and the menu. */
-}
+}   /* End of the .header-inner rule. */
 
 .header-inner > * {                             /* "> *" means every direct child, so the logo and the menu. */
   pointer-events: auto;                         /* Turns clicking back on for the logo and menu. */
-}
+}   /* End of .header-inner > *. */
 
 .logo {                                         /* The GAMEOLOGYGIRL logo. */
   font-family: var(--font-serif);               /* Fancy font. */
@@ -113,21 +135,37 @@ header {                                        /* The floating header. */
   font-size: 15px;                              /* Logo size. */
   letter-spacing: 0.1em;                        /* Spreads the letters apart a little. */
   white-space: nowrap;                          /* Keeps the logo on one line. */
-}
+  color: var(--text);                           /* Soft white, not the browser's blue link color. */
+  text-decoration: none;                        /* No underline, even though it is a link. */
+}   /* End of the .logo rule. */
+
+.logo:hover .logo-full,                         /* Hovering the logo... */
+.logo:hover .logo-short {   /* ...or the short "GG" logo, gets the same glow. */
+  text-shadow: 0 0 8px rgba(240, 141, 190, 0.45), 0 0 18px rgba(240, 141, 190, 0.25);   /* ...gives it the same soft pink glow as Close. */
+}   /* End of the .logo:hover .logo-short rule. */
+
+.logo:focus-visible {                           /* Keyboard focus on the logo... */
+  outline: 2px solid var(--text);               /* ...shows a ring. */
+  outline-offset: 4px;                          /* Small gap. */
+}   /* End of the .logo:focus-visible rule. */
+
+.logo-short {                                   /* The short "GG" logo... */
+  display: none;                                /* ...is hidden on bigger screens. Phones show it (see section 14). */
+}   /* End of the .logo-short rule. */
 
 .logo-pink {                                    /* The word GIRL. */
   color: var(--pink);                           /* Makes it pink. */
-}
+}   /* End of the .logo-pink rule. */
 
 nav {                                           /* The menu area. */
   flex: 1;                                      /* Takes up the leftover space in the header row. */
   overflow-x: auto;                             /* On tiny screens you can swipe the menu sideways. */
   scrollbar-width: none;                        /* Hides that sideways scrollbar (Firefox). */
-}
+}   /* End of the nav rule. */
 
 nav::-webkit-scrollbar {                        /* The scrollbar in Chrome and Safari. */
   display: none;                                /* Hides it there too. */
-}
+}   /* End of the nav::-webkit-scrollbar rule. */
 
 .menu {                                         /* The list of menu buttons. */
   display: flex;                                /* Puts the buttons in a row. */
@@ -137,7 +175,7 @@ nav::-webkit-scrollbar {                        /* The scrollbar in Chrome and S
   margin: 0;                                    /* No extra outside space. */
   padding: 0;                                   /* No extra inside space. */
   min-width: max-content;                       /* Never squishes the words smaller than they need. */
-}
+}   /* End of the .menu rule. */
 
 .menu button {                                  /* Each menu button. */
   font: 500 14px/1 var(--font-serif);           /* Shortcut: weight 500, size 14px, line height 1, fancy font. */
@@ -149,21 +187,21 @@ nav::-webkit-scrollbar {                        /* The scrollbar in Chrome and S
   border: 0;                                    /* No outline. */
   padding: 8px 10px;                            /* Makes the clickable area a little bigger. */
   cursor: pointer;                              /* Shows the pointing hand on hover. */
-}
+}   /* End of the .menu button rule. */
 
 .menu button:hover {                            /* :hover means "while the mouse is over it." */
   color: var(--text);                           /* Brightens the word. */
-}
+}   /* End of the .menu button:hover rule. */
 
 .menu button[aria-current="true"] {             /* The menu item for the section you are looking at (script.js sets this). */
   color: var(--pink);                           /* Turns it pink. */
-}
+}   /* End of the .menu button[aria-current="true"] rule. */
 
 .menu button:focus-visible,                     /* :focus-visible means "selected with the keyboard." */
 #ball:focus-visible {                           /* Same for the ball. */
   outline: 2px solid var(--text);               /* Draws a ring so keyboard users can see where they are. */
   outline-offset: 3px;                          /* Leaves a small gap between the ring and the item. */
-}
+}   /* End of the #ball:focus-visible rule. */
 
 
 /* ---------------------------------------------------------------------
@@ -173,7 +211,7 @@ main {                                          /* The main content area. */
   position: relative;                           /* Lets the ball be positioned inside it. */
   z-index: 1;                                   /* Sits above the background color layer. */
   overflow-x: clip;                             /* Hides the ball when it flies off the side, so no sideways scrolling. */
-}
+}   /* End of the main rule. */
 
 .section {                                      /* Every section (About, Work, Contact). */
   min-height: 88vh;                             /* At least 88% of the screen tall. vh means "screen height." */
@@ -181,33 +219,51 @@ main {                                          /* The main content area. */
   display: flex;                                /* Lets us center the content up and down. */
   align-items: center;                          /* Centers it up and down. */
   border-bottom: 1px dashed var(--line);        /* A thin dashed line between sections. */
-}
+}   /* End of the .section rule. */
 
 #about {                                        /* The About section only. */
   min-height: 0;                                /* No minimum height, it is only as tall as its content. */
   align-items: flex-start;                      /* Content starts at the top instead of the middle. */
-  padding-top: clamp(128px, 18vh, 176px);       /* Top space: 18% of screen height, never less than 128 or more than 176 pixels. */
-  padding-bottom: clamp(72px, 12vh, 120px);     /* Bottom space, same idea. */
-}
+  padding-top: clamp(92px, 12vh, 112px);        /* Top space: 12% of screen height, never less than 92 or more than 112 pixels. Smaller numbers = About sits higher, so more of it fits on the first screen. */
+  padding-bottom: clamp(40px, 6vh, 56px);       /* Bottom space: 6% of screen height, never less than 40 or more than 56 pixels. */
+}   /* End of the #about rule. */
+
+#work {                                         /* The Work section only. */
+  padding-top: 48px;                            /* Less space above the WORK title, so it sits closer to About. */
+}   /* End of the #work rule. */
 
 #contact {                                      /* The Contact section only. */
-  min-height: 44vh;                             /* Shorter than the others. */
-  padding-block: 36px;                          /* Less space above and below. */
+  min-height: 0;                                /* Only as tall as its content, so there is no extra empty space. */
+  padding-top: 64px;                            /* Space above the CONTACT title (the same as before). */
+  padding-bottom: 28px;                         /* Smaller space under the buttons, so the footer sits closer. Bigger number = more space. */
   border-bottom: 0;                             /* No dashed line, since it is the last section. */
-}
+}   /* End of the #contact rule. */
 
 #contact .section-inner {                       /* The content box inside Contact. */
   justify-items: center;                        /* Centers everything left to right. */
   text-align: center;                           /* Centers the text lines too. */
-}
+}   /* End of the #contact .section-inner rule. */
 
 #contact .body-text {                           /* The paragraph inside Contact. */
   margin-inline: auto;                          /* Centers the paragraph block. */
-}
+}   /* End of the #contact .body-text rule. */
 
 #contact .button-row {                          /* The buttons inside Contact. */
   justify-content: center;                      /* Centers the buttons. */
-}
+}   /* End of the #contact .button-row rule. */
+
+.site-footer {                                  /* The copyright line at the very bottom. */
+  position: relative;                           /* Lets it sit above the background color layer... */
+  z-index: 1;                                   /* ...so it does not hide behind it. */
+  text-align: center;                           /* Centered, like Contact. */
+  padding: 8px 16px calc(32px + env(safe-area-inset-bottom, 0px));   /* Space around it, plus room for a phone's home bar. */
+}   /* End of the .site-footer rule. */
+
+.site-footer p {                                /* The footer text. */
+  margin: 0;                                    /* No extra space. */
+  font: 400 13px/1.5 var(--font-sans);          /* 13px body font. */
+  color: var(--text-soft);                      /* Quiet color. */
+}   /* End of the .site-footer p rule. */
 
 .section-inner {                                /* The content box inside every section. */
   width: 100%;                                  /* Fills the width... */
@@ -216,11 +272,11 @@ main {                                          /* The main content area. */
   padding: 0 16px;                              /* Keeps content off the screen edges on phones. */
   display: grid;                                /* grid stacks things in rows with even gaps. */
   gap: 20px;                                    /* Space between each thing. */
-}
+}   /* End of the .section-inner rule. */
 
 .section-inner.roomy {                          /* Work section's content box. */
-  gap: 48px;                                    /* Extra space between the featured project and the grid. */
-}
+  gap: 48px;                                    /* Extra space between the featured project, the case study row, and Playground. */
+}   /* End of the .section-inner.roomy rule. */
 
 .section-title {                                /* The pink ABOUT, WORK, CONTACT titles. */
   font: 500 18px/1 var(--font-serif);           /* Medium weight, 18px, fancy font. */
@@ -228,62 +284,185 @@ main {                                          /* The main content area. */
   letter-spacing: 0.1em;                        /* Spread out. */
   text-transform: uppercase;                    /* ALL CAPS. */
   color: var(--pink);                           /* Pink. */
-}
+  margin: 0;                                    /* No extra space (the About title is a paragraph, which adds space by default). */
+}   /* End of the .section-title rule. */
 
 .small-label {                                  /* Tiny labels like FEATURED. */
-  font: 500 11px/1 var(--font-sans);            /* Small and medium weight. */
+  font: 500 13px/1 var(--font-sans);            /* 13px, medium weight. */
   letter-spacing: 0.12em;                       /* Spread out. */
   text-transform: uppercase;                    /* ALL CAPS. */
   color: var(--text-soft);                      /* Quiet color. */
-}
+}   /* End of the .small-label rule. */
+
+h1, h2, h3, h4 {                                /* Every heading level used on the page. */
+  margin: 0;                                    /* Removes extra space the browser adds. */
+}   /* End of the h1, h2, h3, h4 rule. */
 
 h1,                                             /* The biggest heading... */
-h2 {                                            /* ...and the second-biggest share these looks. */
-  margin: 0;                                    /* Removes extra space the browser adds. */
+h2,                                             /* ...the second-biggest... */
+.title-large {                                  /* ...and smaller headings that should LOOK big ("Dark Scenes...", "Say hello") share these looks. */
   font-family: var(--font-serif);               /* Fancy font. */
   font-weight: 500;                             /* Medium thickness. */
   font-variation-settings: 'SOFT' 100;          /* Soft letters. */
   text-wrap: balance;                           /* Makes multi-line headings break into even lines. */
-}
+}   /* End of the .title-large rule. */
 
 h1 {                                            /* Your name. */
   font-size: clamp(34px, 6vw, 58px);            /* Grows with the screen width, between 34 and 58 pixels. vw means "screen width." */
   line-height: 1.05;                            /* Tight lines for a big heading. */
-}
+}   /* End of the h1 rule. */
 
-h2 {                                            /* Headings like "Say hello." */
+h2,                                             /* Second-biggest headings... */
+.title-large {                                  /* ...and "Dark Scenes..." and "Say hello." Section titles and the pop-up title set their own sizes. */
   font-size: clamp(26px, 4vw, 36px);            /* Between 26 and 36 pixels. */
   line-height: 1.15;                            /* Tight lines. */
-}
+}   /* End of the .title-large rule. */
 
-.subtitle {                                     /* "Game designer and creative technologist." */
+.subtitle {                                     /* The italic line of titles under your name. */
   margin: 0;                                    /* No extra space. */
-  font: italic 400 18px/1.4 var(--font-serif);  /* Italic, regular weight, 18px, fancy font. */
+  font: italic 400 15px/1.4 var(--font-serif);  /* Italic, regular weight, 15px, fancy font. */
   font-variation-settings: 'SOFT' 100;          /* Soft letters. */
   color: var(--text-soft);                      /* Quiet color. */
-}
+}   /* End of the .subtitle rule. */
+
+.subtitle-part {                                /* One title, like "Creative Technologist." */
+  white-space: nowrap;                          /* Keeps the words of one title together, so a phone wraps between titles, not in the middle of one. */
+}   /* End of the .subtitle-part rule. */
+
+.subtitle-divider {                             /* The vertical line between your two titles. */
+  display: inline-block;                        /* Lets us add space on both sides. */
+  margin: 0 0.55em;                             /* Space on the left and right of the line. Bigger number = more space. */
+  font-style: normal;                           /* Straight up and down, not slanted like the italic words. */
+  color: var(--pink-faint);                     /* Soft see-through pink. */
+}   /* End of the .subtitle-divider rule. */
+
+.visually-hidden {                              /* Words only screen readers hear, not shown on the page. */
+  position: absolute;                           /* Takes it out of the normal flow... */
+  width: 1px;                                   /* ...shrinks it to a single tiny dot... */
+  height: 1px;                                  /* ...(the same tiny size up and down)... */
+  overflow: hidden;                             /* ...hides anything that spills out... */
+  clip-path: inset(50%);                        /* ...and clips it away completely. */
+  white-space: nowrap;                          /* Keeps it on one line so nothing peeks out. */
+}   /* End of the .visually-hidden rule. */
 
 .body-text {                                    /* Regular paragraphs. */
   margin: 0;                                    /* No extra space. */
-  font-size: 16px;                              /* Normal size. */
+  font-size: 16px;                              /* Paragraph size for the whole site (the web standard). */
   line-height: 1.65;                            /* Comfy line spacing. */
   color: var(--text-body);                      /* Paragraph color. */
   max-width: 60ch;                              /* Lines stop at about 60 letters wide, which is easy to read. */
-}
+}   /* End of the .body-text rule. */
 
-.body-text.small {                              /* Smaller paragraphs, like on project cards. */
-  font-size: 14px;                              /* A little smaller. */
+.body-text.small {                              /* Card descriptions, under each project name. */
+  font-size: 14px;                              /* Same size as paragraphs, in a quieter color. */
   line-height: 1.55;                            /* Slightly tighter lines. */
   color: var(--text-soft);                      /* Quieter color. */
-}
+}   /* End of the .body-text.small rule. */
+
+.email-row {                                    /* The line with your email. */
+  margin: -8px 0 10px;                          /* Pulls it up closer to "Say hello," and adds 10 pixels of space under it, before the "I am open to roles" sentence. */
+  text-align: center;                           /* Centers the email itself (the Copy button does not count toward the centering). */
+}   /* End of the .email-row rule. */
+
+.email-wrap {                                   /* The email plus its Copy button. */
+  position: relative;                           /* Lets the Copy button be placed right next to the email. */
+  display: inline-block;                        /* Only as wide as the email, so the email is what gets centered. */
+}   /* End of the .email-wrap rule. */
+
+.email-wrap .copy-button {                      /* The Copy button... */
+  position: absolute;                           /* ...is taken out of the centering... */
+  left: calc(100% + 14px);                      /* ...and placed 14 pixels past the end of the email... */
+  top: 50%;                                     /* ...halfway down... */
+  transform: translateY(-50%);                  /* ...and nudged up by half its own height, so it lines up with the email. */
+}   /* End of the .email-wrap .copy-button rule. */
+
+@media (max-width: 480px) {                     /* Small phones, where the button would hang off the screen: */
+  .email-wrap { display: grid; justify-items: center; gap: 10px; }   /* Stack the email and the button, both centered. */
+  .email-wrap .copy-button { position: static; transform: none; }   /* The button goes back into the normal flow, under the email. */
+}   /* End of the rules for this screen size. */
 
 .email {                                        /* Your email address in Contact. */
-  margin: -8px 0 0;                             /* Pulls it up a little closer to "Say hello." */
   font-size: 18px;                              /* Larger so it is easy to read. */
   letter-spacing: 0.02em;                       /* A tiny bit of space between letters. */
   color: var(--pink);                           /* Pink. */
-  user-select: all;                             /* One click selects the whole address for copying. */
-}
+  text-decoration: none;                        /* No underline until hover. */
+  transition: text-shadow 0.3s ease;            /* The glow fades in. */
+}   /* End of the .email rule. */
+
+.email:hover,                                   /* Hovering the email... */
+.email:focus-visible {                          /* ...or selecting it with the keyboard: */
+  text-shadow: 0 0 8px rgba(240, 141, 190, 0.45), 0 0 18px rgba(240, 141, 190, 0.25);   /* a soft pink glow, */
+  text-decoration: underline;                   /* and an underline, so it reads as a link. */
+  text-underline-offset: 4px;                   /* Leaves a little room under the letters. */
+  outline: none;                                /* The underline shows focus, so no ring. */
+}   /* End of the .email:focus-visible rule. */
+
+.copy-button {                                  /* The small Copy button next to your email. */
+  font: 500 12px/1 var(--font-sans);            /* 12px, medium weight. */
+  letter-spacing: 0.08em;                       /* A little spread out. */
+  text-transform: uppercase;                    /* ALL CAPS, like the tags. */
+  color: var(--text-soft);                      /* Quiet color. */
+  background: none;                             /* No fill. */
+  border: 1px solid var(--line);                /* Thin outline. */
+  border-radius: 999px;                         /* Pill shape. */
+  padding: 6px 10px;                            /* Inner space. */
+  cursor: pointer;                              /* Pointing hand. */
+  transition: color 0.3s ease, border-color 0.3s ease, text-shadow 0.3s ease;   /* Changes fade in. */
+}   /* End of the .copy-button rule. */
+
+.copy-button:hover,                             /* Hovering Copy... */
+.copy-button:focus-visible {                    /* ...or selecting it with the keyboard: */
+  color: var(--pink);                           /* pink letters, */
+  border-color: var(--pink-faint);              /* a soft pink outline, */
+  text-shadow: 0 0 8px rgba(240, 141, 190, 0.45);   /* and a soft glow. */
+  outline: none;                                /* The outline shows focus, so no ring. */
+}   /* End of the .copy-button:focus-visible rule. */
+
+.role-line.open-line {                          /* The pink "Open to..." line in About. It borrows the pink role-line look. (".role-line.open-line" is stronger than ".role-line", so this space wins over the "margin: 0" there.) */
+  margin-top: 11px;                             /* Extra space above, on top of the 10px the stack already adds. The gap you see matches the gap between your two paragraphs. Bigger number = more space. */
+}   /* End of the .role-line.open-line rule. */
+
+#about .subtitle {                              /* Your titles under your name, in About only... */
+  margin-bottom: 8px;                           /* ...get a little extra space under them, so the bio does not crowd them. */
+}   /* End of the #about .subtitle rule. */
+
+#about .body-text {                             /* Your bio paragraphs in About... */
+  line-height: 1.75;                            /* ...get a bit more space between lines, because they are long. Bigger number = more space. */
+  max-width: 70ch;                              /* Lines can run a little wider here (about 70 letters), so the bio takes fewer lines and the whole section fits on one screen. */
+}   /* End of the #about .body-text rule. */
+
+#about .tags {                                  /* Your skills and tools list in About... */
+  max-width: 520px;                             /* ...wraps a little sooner, so the tags split into 3 even rows instead of 2 full rows plus 1 lonely tag. If you add or remove tags, nudge this number until the rows look even. */
+}   /* End of the #about .tags rule. */
+
+#about .two-columns {                           /* The About layout (text on the left, portrait on the right)... */
+  grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr);   /* ...gives the text a wider column (1.8 parts to 1), since your bio is longer now. The portrait still fits. */
+}   /* End of the #about .two-columns rule. */
+
+#about .body-text + .body-text {                /* Each bio paragraph that comes right after another one... */
+  margin-top: 8px;                              /* ...gets extra space above it, so the two paragraphs read as separate thoughts. */
+}   /* End of the #about .body-text + .body-text rule. */
+
+.say-hello {                                    /* The "Say hello" link at the end of that line. */
+  color: var(--text);                           /* White letters, so it stands out from the pink words. */
+  text-decoration: underline;                   /* Underlined, so it reads as a link. */
+  text-underline-offset: 4px;                   /* Leaves a little room under the letters. */
+  white-space: nowrap;                          /* Keeps "Say hello" together on one line. */
+  transition: color 0.3s ease, text-shadow 0.3s ease;   /* Changes fade in. */
+}   /* End of the .say-hello rule. */
+
+.say-hello:hover,                               /* Hovering "Say hello"... */
+.say-hello:focus-visible {                      /* ...or selecting it with the keyboard: */
+  color: var(--pink);                           /* pink letters, */
+  text-shadow: 0 0 8px rgba(240, 141, 190, 0.45);   /* and the same soft glow as the other links. */
+  outline: none;                                /* The glow shows focus, so no ring. */
+}   /* End of the .say-hello:focus-visible rule. */
+
+.tools {                                        /* The Tools label and tags in About. */
+  display: grid;                                /* Stacks them. */
+  gap: 10px;                                    /* Space between the label and the tags. */
+  margin-top: 16px;                             /* Extra space above, so the list sits apart from your paragraphs. Bigger number = more space. */
+}   /* End of the .tools rule. */
 
 
 /* ---------------------------------------------------------------------
@@ -294,29 +473,29 @@ h2 {                                            /* Headings like "Say hello." */
   grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);   /* Left column is 1.3 parts, right column is 1 part. */
   gap: 28px;                                    /* Space between the columns. */
   align-items: center;                          /* Lines the columns up in the middle. */
-}
+}   /* End of the .two-columns rule. */
 
 .two-columns.equal {                            /* Two columns of the same size. */
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);     /* 1 part and 1 part. */
-}
+}   /* End of the .two-columns.equal rule. */
 
 .stack {                                        /* Things stacked on top of each other. */
   display: grid;                                /* Uses a grid. */
   gap: 10px;                                    /* Space between them. */
   align-content: start;                         /* Starts at the top instead of stretching. */
-}
+}   /* End of the .stack rule. */
 
-.project-grid {                                 /* The grid of project cards. */
+.project-grid {                                 /* A grid of pictures, used inside case study stories (like the 3 Process photos). */
   display: grid;                                /* Uses a grid. */
   grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));   /* Fits as many 220px-wide cards per row as it can. */
   gap: 18px;                                    /* Space between cards. */
-}
+}   /* End of the .project-grid rule. */
 
 .button-row {                                   /* A row of buttons. */
   display: flex;                                /* In a row. */
   flex-wrap: wrap;                              /* Moves to a new line if there is no room. */
   gap: 12px;                                    /* Space between buttons. */
-}
+}   /* End of the .button-row rule. */
 
 
 /* ---------------------------------------------------------------------
@@ -334,20 +513,27 @@ h2 {                                            /* Headings like "Say hello." */
   color: var(--text-soft);                      /* Quiet color. */
   text-align: center;                           /* Centers multi-line labels. */
   padding: 10px;                                /* Inner space. */
-}
+}   /* End of the .placeholder rule. */
 
 .portrait {                                     /* Your round portrait. */
   aspect-ratio: 1 / 1;                          /* Always a perfect square... */
   border-radius: 50%;                           /* ...rounded into a circle. */
   width: 100%;                                  /* Fills its column... */
-  max-width: 260px;                             /* ...up to 260 pixels. */
+  max-width: 275px;                             /* ...up to 275 pixels, about as tall as your name and bio together. */
   justify-self: center;                         /* Centered in its column. */
-  object-fit: cover;                            /* When you add a real photo, it fills the circle without stretching. */
-}
+  height: auto;                                 /* Lets the height follow the width, so it stays a circle. */
+  object-fit: cover;                            /* The photo fills the circle without stretching. */
+  border: 1px solid var(--line);                /* A thin ring, so the circle's edge stays crisp on the dark background. */
+  box-shadow:                                   /* Two soft shadows, even on every side (the first two numbers are 0, so nothing shifts down): */
+    0 0 12px rgba(0, 0, 0, 0.5),                /* a close, darker shadow, */
+    0 0 36px rgba(0, 0, 0, 0.5);                /* and a wide, soft one. */
+  position: relative;                           /* Lets us nudge the portrait without moving anything else... */
+  top: -40px;                                   /* ...40 pixels up, so it lines up with the middle of your bio paragraphs instead of the whole column. Bigger number = higher. If you change your bio a lot, adjust this. */
+}   /* End of the .portrait rule. */
 
 .featured-image {                               /* The big DSFF image in Work. */
   aspect-ratio: 16 / 10;                        /* Wide rectangle shape. */
-}
+}   /* End of the .featured-image rule. */
 
 
 /* ---------------------------------------------------------------------
@@ -366,7 +552,7 @@ h2 {                                            /* Headings like "Say hello." */
   padding: 11px 18px;                           /* Inner space: 11 top and bottom, 18 sides. */
   cursor: pointer;                              /* Pointing hand on hover. */
   transition: border-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;   /* Changes fade in over 0.3 seconds instead of snapping. */
-}
+}   /* End of the .glow-button rule. */
 
 .glow-button:hover,                             /* When the mouse is over it... */
 .glow-button:focus-visible {                    /* ...or the keyboard selects it: */
@@ -377,7 +563,7 @@ h2 {                                            /* Headings like "Say hello." */
     0 0 22px rgba(240, 141, 190, 0.2),          /* a wider faint glow, */
     inset 0 0 8px rgba(240, 141, 190, 0.2);     /* and a glow on the inside. */
   outline: none;                                /* The glow already shows focus, so we hide the default ring. */
-}
+}   /* End of the .glow-button:focus-visible rule. */
 
 
 /* ---------------------------------------------------------------------
@@ -390,7 +576,7 @@ button.placeholder {                            /* Placeholders that are also bu
   color: var(--text-soft);                      /* Quiet color. */
   cursor: pointer;                              /* Pointing hand. */
   width: 100%;                                  /* Fills its column. */
-}
+}   /* End of the button.placeholder rule. */
 
 .thumbnail {                                    /* Any thumbnail picture area. */
   position: relative;                           /* Lets the hover label sit inside it. */
@@ -398,7 +584,25 @@ button.placeholder {                            /* Placeholders that are also bu
   aspect-ratio: 16 / 10;                        /* Every thumbnail is the same wide shape. */
   width: 100%;                                  /* Fills its card. */
   transition: border-color 0.3s ease;           /* Border color fades in. */
-}
+  border: 1px solid var(--line);                /* Thin border, so real photos have one too. */
+  background: var(--card);                      /* Dark fill while a photo loads. */
+}   /* End of the .thumbnail rule. */
+
+button.thumbnail {                              /* The featured image is a button, so it can be clicked... */
+  padding: 0;                                   /* ...with no inner space, so a real photo fills it... */
+  cursor: pointer;                              /* ...and a pointing hand. */
+}   /* End of the button.thumbnail rule. */
+
+.thumbnail > img,                               /* A real photo or video inside any card picture... */
+.thumbnail > video,                             /* ...or a video... */
+.playground-thumb > img,                        /* ...or a Playground photo... */
+.playground-thumb > video {                     /* ...or a Playground video: */
+  position: absolute;                           /* ...sits on top of the box... */
+  inset: 0;                                     /* ...stretched to all four edges... */
+  width: 100%;                                  /* ...full width... */
+  height: 100%;                                 /* ...full height... */
+  object-fit: cover;                            /* ...and fills it without stretching (the edges may be trimmed). */
+}   /* End of the card photo rule. */
 
 .thumbnail .preview-label {                     /* The "preview loop playing" label. */
   position: absolute;                           /* Placed on top of the thumbnail... */
@@ -408,7 +612,8 @@ button.placeholder {                            /* Placeholders that are also bu
   color: var(--pink);                           /* Pink. */
   opacity: 0;                                   /* Invisible until hover. */
   transition: opacity 0.3s;                     /* Fades in. */
-}
+  z-index: 1;                                   /* Sits above a real photo, not behind it. */
+}   /* End of the .thumbnail .preview-label rule. */
 
 .thumbnail::after {                             /* ::after makes an extra invisible layer. We use it for the shimmer. */
   content: '';                                  /* Needed for ::after to exist. Empty on purpose. */
@@ -418,74 +623,94 @@ button.placeholder {                            /* Placeholders that are also bu
   transition: opacity 0.4s;                     /* Fades in. */
   background: linear-gradient(100deg, transparent 30%, rgba(240, 141, 190, 0.1) 45%, rgba(159, 243, 255, 0.08) 55%, transparent 70%);   /* A soft pink and cyan streak. */
   background-size: 250% 100%;                   /* Makes the streak wide so it can slide across. */
-}
+}   /* End of the .thumbnail::after rule. */
 
-.project-card {                                 /* A clickable project card. */
+.project-card {                                 /* A clickable project card (case studies and Playground). */
   cursor: pointer;                              /* Pointing hand. */
-}
+}   /* End of the .project-card rule. */
 
 .project-name {                                 /* The project name on a card. */
   font-weight: 500;                             /* Medium thickness. */
   font-size: 15px;                              /* Size. */
   transition: color 0.3s;                       /* Color change fades in. */
-}
+}   /* End of the .project-name rule. */
+
+.role-line {                                    /* Your role and the year, under each case study name. */
+  margin: 0;                                    /* No extra space. */
+  font: 500 13px/1.4 var(--font-sans);          /* 13px, medium weight. 1.4 line height in case a long role wraps. */
+  letter-spacing: 0.12em;                       /* Spread out, like the small labels. */
+  text-transform: uppercase;                    /* ALL CAPS. */
+  color: var(--pink);                           /* Pink, so your role stands out. */
+}   /* End of the .role-line rule. */
 
 .project-card:hover .thumbnail,                 /* When you hover a card, its thumbnail... */
 .project-card:focus-visible .thumbnail,         /* ...or select it with the keyboard... */
 button.thumbnail:hover,                         /* ...or hover the featured image... */
 button.thumbnail:focus-visible {                /* ...or keyboard-select it: */
   border-color: var(--pink);                    /* the border turns pink. */
-}
+}   /* End of the button.thumbnail:focus-visible rule. */
 
 .project-card:hover .thumbnail::after,          /* Same four cases... */
-.project-card:focus-visible .thumbnail::after,
-button.thumbnail:hover::after,
-button.thumbnail:focus-visible::after {
+.project-card:focus-visible .thumbnail::after,   /* ...or selecting a card with the keyboard... */
+button.thumbnail:hover::after,   /* ...or hovering the featured image... */
+button.thumbnail:focus-visible::after {   /* ...or selecting it with the keyboard. */
   opacity: 1;                                   /* ...show the shimmer... */
   animation: shimmer 2.4s linear infinite;      /* ...and slide it across forever (2.4 seconds per pass). */
-}
+}   /* End of the button.thumbnail:focus-visible::after rule. */
 
 .project-card:hover .preview-label,             /* Same four cases... */
-.project-card:focus-visible .preview-label,
-button.thumbnail:hover .preview-label,
-button.thumbnail:focus-visible .preview-label {
+.project-card:focus-visible .preview-label,   /* ...or selecting a card with the keyboard... */
+button.thumbnail:hover .preview-label,   /* ...or hovering the featured image... */
+button.thumbnail:focus-visible .preview-label {   /* ...or selecting it with the keyboard. */
   opacity: 1;                                   /* ...show the "preview loop playing" label. */
-}
+}   /* End of the button.thumbnail:focus-visible .preview-label rule. */
 
-.project-card:hover .project-name {             /* When you hover a card... */
+.project-card:hover .project-name {             /* When you hover any card... */
   color: var(--pink);                           /* ...its name turns pink. */
-}
+}   /* End of the .project-card:hover .project-name rule. */
+
+.project-card:hover .playground-thumb,          /* When you hover a Playground card... */
+.project-card:focus-visible .playground-thumb { /* ...or select it with the keyboard: */
+  border-color: var(--pink);                    /* its picture's border turns pink, like the case study cards. */
+}   /* End of the .project-card:focus-visible .playground-thumb rule. */
 
 .project-card:focus-visible,                    /* Keyboard focus on a card... */
 button.thumbnail:focus-visible {                /* ...or the featured image: */
   outline: 2px solid var(--pink);               /* a pink ring... */
   outline-offset: 4px;                          /* ...with a small gap. */
-}
+}   /* End of the button.thumbnail:focus-visible rule. */
 
 @keyframes shimmer {                            /* @keyframes describes an animation step by step. */
   from { background-position: 120% 0; }         /* The streak starts off to the right... */
   to   { background-position: -20% 0; }         /* ...and slides off to the left. */
-}
+}   /* End of this animation. */
 
 
 /* ---------------------------------------------------------------------
-   9b. PEEK CAROUSEL (the sideways row of project cards)
+   10. PEEK CAROUSELS (the sideways rows of cards in Work and Playground)
    --------------------------------------------------------------------- */
 .peek-carousel {                                /* Holds the arrows and the row. */
   display: grid;                                /* Stacks the arrows above the row. */
   gap: 12px;                                    /* Space between the arrows and the row. */
   --card-gap: 18px;                             /* Space between cards. Used in the math below, so change it here only. */
-}
+}   /* End of the .peek-carousel rule. */
+
+.peek-header {                                  /* The line above each row: label on the left, arrows on the right. */
+  display: flex;                                /* In a row. */
+  justify-content: space-between;               /* Pushes the label left and the arrows right. */
+  align-items: center;                          /* Lines them up in the middle, up and down. */
+  gap: 12px;                                    /* Space between them on tiny screens. */
+  min-height: 40px;                             /* Same height as the arrows, so the line does not jump when arrows hide. */
+}   /* End of the .peek-header rule. */
 
 .peek-controls {                                /* The arrow buttons. */
   display: flex;                                /* In a row. */
-  justify-content: flex-end;                    /* Pushed to the right side. */
   gap: 8px;                                     /* Space between the two arrows. */
-}
+}   /* End of the .peek-controls rule. */
 
 .peek-controls[hidden] {                        /* script.js hides the arrows when every card already fits. */
   display: none;                                /* Gone. */
-}
+}   /* End of the .peek-controls[hidden] rule. */
 
 .peek-arrow {                                   /* One arrow button. */
   width: 40px;                                  /* Width. */
@@ -497,21 +722,21 @@ button.thumbnail:focus-visible {                /* ...or the featured image: */
   font: 400 16px/1 var(--font-sans);            /* Arrow size. */
   cursor: pointer;                              /* Pointing hand. */
   transition: border-color 0.3s, box-shadow 0.3s, opacity 0.3s;   /* Changes fade in. */
-}
+}   /* End of the .peek-arrow rule. */
 
 .peek-arrow:hover,                              /* Hovering an arrow... */
 .peek-arrow:focus-visible {                     /* ...or selecting it with the keyboard: */
   border-color: var(--pink);                    /* brighter outline, */
   box-shadow: 0 0 10px rgba(240, 141, 190, 0.45), 0 0 22px rgba(240, 141, 190, 0.2);   /* and the pink glow. */
   outline: none;                                /* The glow shows focus, so no extra ring. */
-}
+}   /* End of the .peek-arrow:focus-visible rule. */
 
 .peek-arrow:disabled {                          /* An arrow with nowhere left to go... */
   opacity: 0.3;                                 /* ...fades out... */
   cursor: default;                              /* ...shows the normal cursor... */
   box-shadow: none;                             /* ...and does not glow. */
   border-color: var(--pink-faint);              /* Back to the soft outline. */
-}
+}   /* End of the .peek-arrow:disabled rule. */
 
 .peek-row {                                     /* The scrolling row of cards. */
   display: flex;                                /* Cards in one line. */
@@ -524,30 +749,42 @@ button.thumbnail:focus-visible {                /* ...or the featured image: */
   padding: 6px 4px;                             /* A little room so the pink focus ring is not cut off... */
   margin: -6px -4px;                            /* ...without changing where the row sits. */
   scroll-padding-inline: 4px;                   /* Tells the snapping about that padding, so cards line up with the page edge. */
-}
+  --fade-left: 0px;                             /* How wide the soft fade is on the left. 0 = no fade (at the start). script.js changes this. */
+  --fade-right: 80px;                           /* How wide the soft fade is on the right, where the next card peeks in. Bigger number = longer fade. */
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 var(--fade-left), #000 calc(100% - var(--fade-right)), transparent 100%);   /* Same as below, for Safari. */
+  mask-image: linear-gradient(to right, transparent 0, #000 var(--fade-left), #000 calc(100% - var(--fade-right)), transparent 100%);   /* A see-through-to-solid strip: the edges melt away instead of ending in a hard line, like the header. */
+}   /* End of the .peek-row rule. */
+
+.peek-row.not-at-start {                        /* When you have scrolled away from the first card... */
+  --fade-left: 80px;                            /* ...the left edge fades too, since a card is peeking in there now. */
+}   /* End of the .peek-row.not-at-start rule. */
+
+.peek-row.at-end {                              /* When you reach the last card... */
+  --fade-right: 0px;                            /* ...the right fade goes away, so the last card is fully visible. */
+}   /* End of the .peek-row.at-end rule. */
 
 .peek-row::-webkit-scrollbar {                  /* The scrollbar in Chrome and Safari. */
   display: none;                                /* Hidden there too. */
-}
+}   /* End of the .peek-row::-webkit-scrollbar rule. */
 
 .peek-row > .project-card {                     /* Each card in the row. */
   flex: 0 0 calc((100% - var(--card-gap) * 2) / 2.3);   /* Laptop and desktop: 2 full cards plus about a third of the next. */
   scroll-snap-align: start;                     /* This card's left edge is a snap point. */
-}
+}   /* End of the .peek-row > .project-card rule. */
 
 @media (max-width: 640px) {                     /* Phones and narrow screens: */
-  .peek-row > .project-card {
+  .peek-row > .project-card {   /* On phones, each case study card in the row: */
     flex-basis: 82%;                            /* 1 full card plus a peek of the next. */
-  }
-}
+  }   /* End of the .peek-row > .project-card rule. */
+}   /* End of the rules for this screen size. */
 
 @media (prefers-reduced-motion: reduce) {       /* For less motion: */
   .peek-row { scroll-behavior: auto; }          /* Arrow clicks jump instead of gliding. */
-}
+}   /* End of the rules for this screen size. */
 
 
 /* ---------------------------------------------------------------------
-   9c. TAGS AND PLAYGROUND
+   11. TAGS AND PLAYGROUND
    --------------------------------------------------------------------- */
 .tags {                                         /* A row of small tags like GAME or PHYSICAL. */
   display: flex;                                /* In a row. */
@@ -556,72 +793,46 @@ button.thumbnail:focus-visible {                /* ...or the featured image: */
   list-style: none;                             /* No bullet points. */
   margin: 2px 0 0;                              /* A tiny bit of space above. */
   padding: 0;                                   /* No extra inside space. */
-}
+}   /* End of the .tags rule. */
 
 .tags li {                                      /* One tag. */
-  font: 500 10px/1 var(--font-sans);            /* Tiny, medium weight. */
+  font: 500 10px/1 var(--font-sans);            /* 10px, medium weight. The smallest text on the site. */
   letter-spacing: 0.1em;                        /* Spread out. */
   text-transform: uppercase;                    /* ALL CAPS. */
   color: var(--text-soft);                      /* Quiet color. */
   border: 1px solid var(--line);                /* Thin outline. */
   border-radius: 999px;                         /* Pill shape. */
   padding: 5px 8px;                             /* Inner space. */
-}
-
-.playground {                                   /* The whole Playground group. */
-  display: grid;                                /* Stacks the heading, grid, and button. */
-  gap: 18px;                                    /* Space between them. */
-  padding-top: 28px;                            /* Space above... */
-  border-top: 1px solid var(--line);            /* ...and a thin line, so it reads as its own group. */
-}
-
-.playground-top {                               /* The heading row. */
-  display: flex;                                /* Heading and line side by side. */
-  flex-wrap: wrap;                              /* Stacks on small screens. */
-  align-items: baseline;                        /* Lines up the bottoms of the words. */
-  gap: 6px 16px;                                /* Space between them. */
-}
-
-.playground-title {                             /* The word "Playground." */
-  margin: 0;                                    /* No extra space. */
-  font: 500 24px/1.2 var(--font-serif);         /* Fancy font, 24px. */
-  font-variation-settings: 'SOFT' 100;          /* Soft letters. */
-}
-
-.playground-grid {                              /* The grid of small cards. */
-  display: grid;                                /* Uses a grid. */
-  grid-template-columns: repeat(4, minmax(0, 1fr));   /* 4 cards per row on laptops. The first 8 fill two rows evenly. */
-  gap: 22px 16px;                               /* 22px between rows, 16px between columns. */
-}
+}   /* End of the .tags li rule. */
 
 .playground-thumb {                             /* A small card's picture area. */
   aspect-ratio: 4 / 3;                          /* A slightly squarer shape than the case studies, so they read as smaller pieces. */
-  width: 100%;                                  /* Fills the card. */
-}
+  width: 100%;                                  /* Fills its card. The card's width (below) sets the size. */
+  position: relative;                           /* Lets a real photo sit inside it. */
+  overflow: hidden;                             /* Keeps the photo inside the border. */
+  border: 1px solid var(--line);                /* Thin border, so real photos have one too. */
+  background: var(--card);                      /* Dark fill while a photo loads. */
+}   /* End of the .playground-thumb rule. */
 
-@media (max-width: 720px) {                     /* Tablets and phones: */
-  .playground-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }   /* 2 per row, so the first 8 make four even rows. */
-}
+.playground .peek-row > .project-card {         /* Each Playground card. Everything else matches the case study row. */
+  flex-basis: calc((100% - var(--card-gap) * 5) / 5.6);   /* Laptop and desktop: 5 full cards plus a peek of the next. */
+}   /* End of the .playground .peek-row > .project-card rule. */
 
-.playground-card .project-name {                /* Names on small cards. */
-  font-size: 14px;                              /* A little smaller than case study names. */
-}
+@media (max-width: 900px) {                     /* Tablets and small laptops: */
+  .playground .peek-row > .project-card {   /* Each Playground card in the row, on this screen size: */
+    flex-basis: calc((100% - var(--card-gap) * 4) / 4.5);   /* 4 full cards plus a peek. */
+  }   /* End of the .playground .peek-row > .project-card rule. */
+}   /* End of the rules for this screen size. */
 
-.playground-card .body-text.small {             /* Descriptions on small cards. */
-  font-size: 13px;                              /* A little smaller. */
-}
-
-.playground:not(.show-all) .playground-card.extra {   /* Until "Show all" is clicked... */
-  display: none;                                /* ...the extra cards are hidden. */
-}
-
-.playground-toggle {                            /* The Show all button. */
-  justify-self: center;                         /* Centered under the grid. */
-}
+@media (max-width: 640px) {                     /* Phones: */
+  .playground .peek-row > .project-card {   /* Each Playground card in the row, on this screen size: */
+    flex-basis: calc((100% - var(--card-gap) * 2) / 2.4);   /* 2 full cards plus a peek. */
+  }   /* End of the .playground .peek-row > .project-card rule. */
+}   /* End of the rules for this screen size. */
 
 
 /* ---------------------------------------------------------------------
-   10. CASE STUDY POP-UP
+   12. CASE STUDY POP-UP
    --------------------------------------------------------------------- */
 .case-study {                                   /* The dark see-through cover behind the panel. */
   position: fixed;                              /* Stays still on screen. */
@@ -632,11 +843,11 @@ button.thumbnail:focus-visible {                /* ...or the featured image: */
   justify-content: center;                      /* Centers the panel left to right. */
   align-items: flex-end;                        /* Sits the panel at the bottom of the screen. */
   padding-top: env(safe-area-inset-top, 0px);   /* Room for a phone's notch. */
-}
+}   /* End of the .case-study rule. */
 
 .case-study[hidden] {                           /* When the pop-up has "hidden"... */
   display: none;                                /* ...it does not show at all. */
-}
+}   /* End of the .case-study[hidden] rule. */
 
 .case-study-panel {                             /* The panel that slides up. */
   width: 100%;                                  /* Full width... */
@@ -651,12 +862,12 @@ button.thumbnail:focus-visible {                /* ...or the featured image: */
   transform: translateY(40px);                  /* Starts 40 pixels lower... */
   opacity: 0;                                   /* ...and invisible. */
   transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.3, 1), opacity 0.4s ease;   /* Then glides up and fades in. */
-}
+}   /* End of the .case-study-panel rule. */
 
 .case-study.open .case-study-panel {            /* When script.js adds "open"... */
   transform: none;                              /* ...the panel moves into place... */
   opacity: 1;                                   /* ...and becomes fully visible. */
-}
+}   /* End of the .case-study.open .case-study-panel rule. */
 
 .case-study-top {                               /* The top strip with the Close button. */
   position: sticky;                             /* Sticks to the top while you scroll the panel. */
@@ -667,15 +878,15 @@ button.thumbnail:focus-visible {                /* ...or the featured image: */
   align-items: center;                          /* Lined up in the middle. */
   padding: 18px 24px;                           /* Inner space. */
   background: linear-gradient(to bottom, #0F0D11 70%, rgba(15, 13, 17, 0));   /* Fades out at the bottom so content slides under softly. */
-}
+}   /* End of the .case-study-top rule. */
 
 .case-study-kicker {                            /* The small pink "CASE STUDY" label. */
-  font: 500 12px/1 var(--font-serif);           /* Small fancy font. */
+  font: 500 16px/1 var(--font-serif);           /* Fancy font, 16px. */
   font-variation-settings: 'SOFT' 100;          /* Soft letters. */
   letter-spacing: 0.14em;                       /* Spread out. */
   text-transform: uppercase;                    /* ALL CAPS. */
   color: var(--pink);                           /* Pink. */
-}
+}   /* End of the .case-study-kicker rule. */
 
 .close-button {                                 /* The Close button. */
   font: 500 13px/1 var(--font-sans);            /* Body font, 13px. */
@@ -687,104 +898,277 @@ button.thumbnail:focus-visible {                /* ...or the featured image: */
   display: flex;                                /* Puts "Close" and the ✕ in a row. */
   gap: 8px;                                     /* Space between them. */
   align-items: center;                          /* Lined up in the middle. */
-}
+  transition: color 0.3s ease, text-shadow 0.3s ease;   /* The glow fades in, like the other buttons. */
+}   /* End of the .close-button rule. */
 
-.close-button:hover {                           /* Hovering Close... */
-  color: var(--text);                           /* ...brightens it. */
-}
-
-.close-button:focus-visible {                   /* Keyboard focus on Close... */
-  outline: 2px solid var(--pink);               /* ...shows a pink ring. */
-  outline-offset: 3px;                          /* Small gap. */
-}
+.close-button:hover,                            /* Hovering Close... */
+.close-button:focus-visible {                   /* ...or selecting it with the keyboard: */
+  color: var(--pink);                           /* the letters turn pink... */
+  text-shadow:                                  /* ...and glow pink (text-shadow puts the glow on the letters only). */
+    0 0 8px rgba(240, 141, 190, 0.45),   /* A close pink glow (8 pixels wide)... */
+    0 0 18px rgba(240, 141, 190, 0.25);   /* ...and a wider, fainter one (18 pixels). */
+  outline: none;                                /* The glow shows focus, so no ring. */
+}   /* End of the .close-button:focus-visible rule. */
 
 .case-study-body {                              /* Everything under the top strip. */
   padding: 4px 28px 48px;                       /* Inner space: 4 top, 28 sides, 48 bottom. */
   display: grid;                                /* Stacks the parts. */
   gap: 44px;                                    /* Big space between the placard, the story, and the footer. */
-}
+}   /* End of the .case-study-body rule. */
 
 .placard {                                      /* Big image plus wall label. */
   display: grid;                                /* Uses a grid. */
-  grid-template-columns: minmax(0, 460px) minmax(0, 300px);   /* Image column up to 460px, label column up to 300px. */
+  grid-template-columns: minmax(0, 460px) minmax(0, 360px);   /* Image column up to 460px, label column up to 360px. */
   gap: 36px;                                    /* Space between them. */
   align-items: end;                             /* Lines up the bottoms, like a label hung low beside a painting. */
   justify-content: start;                       /* Keeps both on the left, lined up with the story below. */
-}
+}   /* End of the .placard rule. */
 
 .placard-media {                                /* The big image area. */
   aspect-ratio: 16 / 10;                        /* Wide rectangle. */
   width: 100%;                                  /* Fills its column. */
-}
+  border: 1px solid var(--line);                /* Thin border, for real photos too. */
+  overflow: hidden;                             /* Keeps the photo inside the border. */
+}   /* End of the .placard-media rule. */
+
+.placard-media img,                             /* Real photos and videos... */
+.placard-media video,   /* ... */
+.quick-media img,   /* ... */
+.quick-media video {   /* ... */
+  width: 100%;                                  /* ...fill their box... */
+  height: 100%;   /* ...and fill its height too. */
+  object-fit: cover;                            /* ...without stretching. */
+  display: block;                               /* No stray gap underneath. */
+}   /* End of the .quick-media video rule. */
+
+.case-quote {                                   /* A quote from a player, teacher, or partner. */
+  margin: 0;                                    /* No extra space. */
+  max-width: 760px;                             /* Same width as the story. */
+  border-left: 2px solid var(--pink);           /* A pink line, like the wall label. */
+  padding: 4px 0 4px 18px;                      /* Space inside, mostly on the left. */
+  display: grid;                                /* Stacks the quote and the name. */
+  gap: 10px;                                    /* Space between them. */
+}   /* End of the .case-quote rule. */
+
+.case-quote[hidden] {                           /* A project with no quote... */
+  display: none;                                /* ...hides the quote box. */
+}   /* End of the .case-quote[hidden] rule. */
+
+.case-quote p {                                 /* The quote itself. */
+  margin: 0;                                    /* No extra space. */
+  font: italic 400 22px/1.45 var(--font-serif); /* Big italic fancy font, so it reads as a quote. */
+  font-variation-settings: 'SOFT' 100;          /* Soft letters. */
+  color: var(--text);                           /* Soft white. */
+}   /* End of the .case-quote p rule. */
+
+.case-quote footer {                            /* Who said it. */
+  font: 500 13px/1.4 var(--font-sans);          /* 13px, medium weight, like the small labels. */
+  letter-spacing: 0.12em;                       /* Spread out. */
+  text-transform: uppercase;                    /* ALL CAPS. */
+  color: var(--text-soft);                      /* Quiet color. */
+}   /* End of the .case-quote footer rule. */
 
 .wall-label {                                   /* The museum-style wall label. */
   border-left: 2px solid var(--pink);           /* Pink line down the left side. */
   padding: 6px 0 6px 18px;                      /* Space inside, mostly on the left. */
   display: grid;                                /* Stacks the lines. */
   gap: 8px;                                     /* Space between lines. */
-}
+}   /* End of the .wall-label rule. */
 
 .wall-label-title {                             /* The project title on the label. */
   font-size: 26px;                              /* Size. */
   line-height: 1.15;                            /* Tight lines. */
-}
+}   /* End of the .wall-label-title rule. */
 
 .wall-label-credit {                            /* "Brandy Coleman, 2026." */
   margin: 0;                                    /* No extra space. */
-  font: italic 400 15px/1.4 var(--font-serif);  /* Italic fancy font. */
+  font: italic 400 12px/1.4 var(--font-serif);  /* Italic fancy font, 12px. */
   font-variation-settings: 'SOFT' 100;          /* Soft letters. */
   color: var(--text-soft);                      /* Quiet color. */
-}
+}   /* End of the .wall-label-credit rule. */
 
 .wall-label-line {                              /* Materials and role lines. */
   margin: 0;                                    /* No extra space. */
-  font: 400 14px/1.5 var(--font-sans);          /* Body font, 14px. */
+  font: 400 16px/1.5 var(--font-sans);          /* Body font, 16px, same as paragraphs. */
   color: var(--text-body);                      /* Paragraph color. */
-}
+}   /* End of the .wall-label-line rule. */
 
 .wall-label-line.soft {                         /* The role line. */
   color: var(--text-soft);                      /* Quieter color. */
-}
+}   /* End of the .wall-label-line.soft rule. */
 
 .wall-label-note {                              /* The one-sentence description. */
   margin: 6px 0 0;                              /* A little space above. */
-  font: 400 14px/1.6 var(--font-sans);          /* Body font. */
+  font: 400 16px/1.6 var(--font-sans);          /* Body font, 16px, same as paragraphs. */
   color: var(--text-body);                      /* Paragraph color. */
   max-width: 40ch;                              /* About 40 letters per line. */
-}
+}   /* End of the .wall-label-note rule. */
 
 .story {                                        /* The story under the placard. */
   display: grid;                                /* Stacks the story sections. */
   gap: 44px;                                    /* Space between them. */
   max-width: 760px;                             /* Keeps the reading column comfy. */
-}
+}   /* End of the .story rule. */
 
 .story-section {                                /* One story part, like "Process." */
   display: grid;                                /* Stacks its heading, text, and images. */
   gap: 14px;                                    /* Space between them. */
-}
+}   /* End of the .story-section rule. */
 
 .story-section h3 {                             /* The story part's heading. */
   margin: 0;                                    /* No extra space. */
   font: 500 24px/1.2 var(--font-serif);         /* Fancy font, 24px. */
   font-variation-settings: 'SOFT' 100;          /* Soft letters. */
-}
+}   /* End of the .story-section h3 rule. */
 
-.story-section .placeholder {                   /* Placeholder images inside the story. */
+.story-section > .placeholder {                 /* Single wide images inside the story (like the playtest photo). ">" skips the small 3-photo grids. */
   width: 100%;                                  /* Fill the column... */
-  max-width: 720px;                             /* ...up to 720 pixels. */
-}
+  max-width: 460px;                             /* ...up to 460 pixels, the same width as the big image at the top of the pop-up. */
+}   /* End of the .story-section > .placeholder rule. */
 
 .case-study-footer {                            /* The bottom row with "Next project." */
   display: flex;                                /* In a row. */
   justify-content: flex-end;                    /* Pushed to the right. */
   padding-top: 16px;                            /* Space above. */
   border-top: 1px solid var(--line);            /* Thin line above. */
-}
+}   /* End of the .case-study-footer rule. */
+
+
+/* Playground quick look: a smaller pop-up that reuses the case study cover and panel. */
+.case-study.quick-look {                        /* The cover behind the quick look... */
+  align-items: center;                          /* ...centers the panel up and down instead of sliding up from the bottom. */
+  padding: 16px;                                /* Keeps the panel off the screen edges. */
+}   /* End of the .case-study.quick-look rule. */
+
+.quick-look .case-study-panel {                 /* The quick look panel. */
+  max-width: 880px;                             /* A little narrower than a case study. */
+  height: auto;                                 /* Only as tall as its content... */
+  max-height: 100%;                             /* ...but never taller than the screen (it scrolls if needed). */
+  border-bottom: 1px solid var(--line);         /* A border on all four sides... */
+  border-radius: 14px;                          /* ...and all four corners rounded, since it floats in the middle. */
+}   /* End of the .quick-look .case-study-panel rule. */
+
+.quick-body {                                   /* Picture on the left, words on the right. */
+  display: grid;                                /* Uses a grid. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);      /* Two equal columns. */
+  gap: 28px;                                    /* Space between the picture and the words. */
+  align-items: start;                           /* Lines them up at the top, since the words can run longer than the picture. */
+  padding: 4px 28px 0;                          /* Side space. */
+}   /* End of the .quick-body rule. */
+
+.quick-media {                                  /* One big picture, GIF, or clip. */
+  aspect-ratio: 16 / 10;                        /* Same wide shape as the case study hero image. */
+  width: 100%;                                  /* Fills the panel. */
+  border: 1px solid var(--line);                /* Thin border, for real photos too. */
+  overflow: hidden;                             /* Keeps the photo inside the border. */
+}   /* End of the .quick-media rule. */
+
+.quick-photos {                                 /* A row of 3 photos, for physical projects. */
+  display: grid;                                /* A grid... */
+  grid-template-columns: repeat(3, minmax(0, 1fr));   /* ...of 3 equal columns. */
+  gap: 12px;                                    /* Space between photos. */
+}   /* End of the .quick-photos rule. */
+
+.quick-gallery {                                /* The photo area: small photos on top, big photo below. */
+  display: grid;                                /* Stacks them. */
+  gap: 12px;                                    /* Space between the row and the big photo. */
+}   /* End of the .quick-gallery rule. */
+
+.quick-thumb {                                  /* One small clickable photo. */
+  aspect-ratio: 4 / 3;                          /* Same shape as the Playground card pictures. */
+  width: 100%;                                  /* Fills its column. */
+  padding: 0;                                   /* No inner space, so a real photo fills it. */
+  border: 1px solid var(--line);                /* Thin border. */
+  background: var(--card);                      /* Dark fill behind the photo. */
+  cursor: pointer;                              /* Pointing hand. */
+  overflow: hidden;                             /* Keeps the photo inside the border. */
+  font: 400 11px/1.4 var(--font-mono);          /* Stand-in label font. */
+  color: var(--text-soft);                      /* Stand-in label color. */
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;   /* The outline fades in. */
+}   /* End of the .quick-thumb rule. */
+
+.quick-thumb:hover,                             /* Hovering a small photo... */
+.quick-thumb:focus-visible {                    /* ...or selecting it with the keyboard: */
+  border-color: var(--pink-faint);              /* a soft pink border. */
+  outline: none;                                /* The border shows focus, so no extra ring. */
+}   /* End of the .quick-thumb:focus-visible rule. */
+
+.quick-thumb.is-selected {                      /* The photo showing large below: */
+  border-color: var(--pink);                    /* a pink outline, */
+  box-shadow: 0 0 0 1px var(--pink), 0 0 12px rgba(240, 141, 190, 0.4);   /* made twice as thick, with a soft pink glow. */
+}   /* End of the .quick-thumb.is-selected rule. */
+
+.quick-big {                                    /* The big photo under the row. */
+  aspect-ratio: 4 / 3;                          /* Same shape as the small photos. */
+  width: 100%;                                  /* Fills the column. */
+  border: 1px solid var(--line);                /* Thin border. */
+  overflow: hidden;                             /* Keeps the photo inside the border. */
+}   /* End of the .quick-big rule. */
+
+.quick-thumb img,                               /* Real photos, small and big... */
+.quick-big img {   /* (the big photo too) */
+  width: 100%;                                  /* ...fill their box... */
+  height: 100%;   /* ...and fill its height too. */
+  object-fit: cover;                            /* ...without stretching. */
+  display: block;                               /* No stray gap underneath. */
+}   /* End of the .quick-big img rule. */
+
+.quick-left {                                   /* The picture side: picture on top, link buttons under it. */
+  display: grid;                                /* Stacks them. */
+  gap: 16px;                                    /* Space between the picture and the buttons. */
+}   /* End of the .quick-left rule. */
+
+.quick-text {                                   /* The words. */
+  display: grid;                                /* Stacks them. */
+  gap: 12px;                                    /* Space between lines. */
+}   /* End of the .quick-text rule. */
+
+.quick-parts {                                  /* The three short labeled parts. */
+  display: grid;                                /* Stacks them. */
+  gap: 14px;                                    /* Space between parts. */
+  padding: 4px 0;                               /* A little breathing room above and below. */
+}   /* End of the .quick-parts rule. */
+
+.quick-part {                                   /* One part: a tiny label and a sentence or two. */
+  display: grid;                                /* Stacks the label and words. */
+  gap: 6px;                                     /* Tight space between them. */
+}   /* End of the .quick-part rule. */
+
+.quick-left .button-row[hidden] {              /* A project with no links... */
+  display: none;                                /* ...hides its empty button row. */
+}   /* End of the .quick-left .button-row[hidden] rule. */
+
+.button-row .glow-button.is-placeholder {       /* A link button that does not have its link yet. */
+  opacity: 0.45;                                /* Faded... */
+  pointer-events: none;                         /* ...and not clickable, so it never leads nowhere. */
+}   /* End of the .button-row .glow-button.is-placeholder rule. */
+
+.quick-footer {                                 /* The Previous and Next row. */
+  display: flex;                                /* In a row. */
+  justify-content: space-between;               /* Previous on the left, Next on the right. */
+  gap: 12px;                                    /* Space between them on small screens. */
+  margin: 26px 28px 28px;                       /* Space around the row. */
+  padding-top: 16px;                            /* Space above... */
+  border-top: 1px solid var(--line);            /* ...and a thin line. */
+}   /* End of the .quick-footer rule. */
+
+.quick-footer .glow-button {                   /* The Previous and Next buttons. */
+  white-space: nowrap;                          /* Keep each on one line... */
+  overflow: hidden;                             /* ...and if a name is too long for the space... */
+  text-overflow: ellipsis;                      /* ...cut it off with "..." instead of wrapping. */
+  max-width: 48%;                               /* Each takes at most about half the row. */
+}   /* End of the .quick-footer .glow-button rule. */
+
+@media (max-width: 720px) {                     /* Phones and small tablets: */
+  .quick-body { grid-template-columns: 1fr; gap: 20px; padding: 0 18px; }   /* Picture on top, words underneath, less side space. */
+  .quick-left { display: contents; }            /* Lets the picture and buttons line up as separate rows... */
+  #quick-links { order: 2; }                    /* ...so the link buttons can move below the words on phones. */
+  .quick-footer { margin: 22px 18px 22px; }     /* Less space around the footer. */
+}   /* End of the rules for this screen size. */
 
 
 /* ---------------------------------------------------------------------
-   11. THE BALL OF LIGHT
+   13. THE BALL OF LIGHT
    --------------------------------------------------------------------- */
 #ball {                                         /* The ball's invisible touch area. */
   opacity: 0.68;                                /* Makes the light a bit see-through. */
@@ -792,9 +1176,9 @@ button.thumbnail:focus-visible {                /* ...or the featured image: */
   z-index: 10;                                  /* Above the content, below the header. */
   left: 0;                                      /* Starting spot (script.js changes this). */
   top: 0;                                       /* Starting spot (script.js changes this). */
-  width: 64px;                                  /* Touch area width. Bigger than the light on purpose. */
-  height: 64px;                                 /* Touch area height. */
-  margin: -32px 0 0 -32px;                      /* Shifts it so left and top point at its center. */
+  width: 115px;                                 /* Touch area width. Much bigger than the light, so people never quite reach it. */
+  height: 115px;                                /* Touch area height. Keep it the same as the width. */
+  margin: -57.5px 0 0 -57.5px;                  /* Half the size, pulled up and left, so the touch area is centered on the light. */
   padding: 0;                                   /* No inner space. */
   border: 0;                                    /* No outline. */
   border-radius: 50%;                           /* Round touch area. */
@@ -802,19 +1186,19 @@ button.thumbnail:focus-visible {                /* ...or the featured image: */
   cursor: pointer;                              /* Pointing hand. */
   touch-action: manipulation;                   /* Makes taps on phones respond quickly. */
   mix-blend-mode: screen;                       /* Blends the light with the background so it glows. */
-}
+}   /* End of the #ball rule. */
 
 #ball.is-gone {                                 /* While the ball is exploded... */
   pointer-events: none;                         /* ...it cannot be touched. */
-}
+}   /* End of the #ball.is-gone rule. */
 
 .ball-light {                                   /* The glowing light itself. */
   position: absolute;                           /* Placed inside the touch area... */
   left: 50%;                                    /* ...in the center... */
   top: 50%;                                     /* ...of it. */
-  width: 11px;                                  /* Light size. */
-  height: 11px;                                 /* Light size. */
-  margin: -5.5px 0 0 -5.5px;                    /* Half the size, so it is truly centered. */
+  width: 11.55px;                               /* Light size (5% bigger than the old 11px). */
+  height: 11.55px;                              /* Light size. Keep it the same as the width. */
+  margin: -5.775px 0 0 -5.775px;                /* Half the size, pulled up and left, so it is truly centered. */
   border-radius: 50%;                           /* Round. */
   background: radial-gradient(circle, #fff 0 22%, var(--ball-core) 50%, rgba(255, 255, 255, 0) 100%);   /* White center fading out to clear. */
   filter: blur(1.2px);                          /* A soft blur so it has no hard edge. */
@@ -823,18 +1207,18 @@ button.thumbnail:focus-visible {                /* ...or the featured image: */
   animation:                                    /* Two animations play at once: */
     flicker var(--flicker-speed) ease-in-out infinite,           /* a gentle flicker, */
     glow-pulse var(--pulse-speed) ease-in-out infinite alternate; /* and a breathing glow. */
-}
+}   /* End of the .ball-light rule. */
 
 #ball.is-gone .ball-light {                     /* The light while exploded: */
   animation: none;                              /* stop animating, */
   opacity: 0;                                   /* turn invisible, */
   transform: scale(0.2);                        /* and shrink. */
   transition: opacity 0.08s, transform 0.08s;   /* Happens almost instantly. */
-}
+}   /* End of the #ball.is-gone .ball-light rule. */
 
 #ball.is-forming .ball-light {                  /* When the ball pulls itself back together... */
   animation: form 1.1s ease-out;                /* ...it grows back in over 1.1 seconds. */
-}
+}   /* End of the #ball.is-forming .ball-light rule. */
 
 #ball.mood-1 {                                  /* Mood 1, the first time it gets chased away: orange. */
   --pulse-speed: 1.1s;                          /* Pulses faster. */
@@ -843,7 +1227,7 @@ button.thumbnail:focus-visible {                /* ...or the featured image: */
   --ball-glow-outer: rgba(255, 130, 30, 0.3);   /* Orange outer glow. */
   --flicker-speed: 1.1s;                        /* Flickers faster. */
   --shake-size: 5px;                            /* Shakes harder. */
-}
+}   /* End of the #ball.mood-1 rule. */
 
 #ball.mood-2 {                                  /* Mood 2: red. */
   --pulse-speed: 0.7s;                          /* Even faster pulse. */
@@ -852,7 +1236,7 @@ button.thumbnail:focus-visible {                /* ...or the featured image: */
   --ball-glow-outer: rgba(255, 50, 20, 0.34);   /* Red outer glow. */
   --flicker-speed: 0.6s;                        /* Faster flicker. */
   --shake-size: 7px;                            /* Bigger shake. */
-}
+}   /* End of the #ball.mood-2 rule. */
 
 #ball.mood-3 {                                  /* Mood 3, right before the fireworks: hot pink. */
   --pulse-speed: 0.4s;                          /* Fastest pulse. */
@@ -861,68 +1245,76 @@ button.thumbnail:focus-visible {                /* ...or the featured image: */
   --ball-glow-outer: rgba(255, 30, 100, 0.38);  /* Pink outer glow. */
   --flicker-speed: 0.3s;                        /* Fastest flicker. */
   --shake-size: 9px;                            /* Biggest shake. */
-}
+}   /* End of the #ball.mood-3 rule. */
 
 #ball.is-rising .ball-light {                   /* While it shakes and rises... */
   animation: jitter 0.045s linear infinite;     /* ...it jitters side to side very fast. */
-}
+}   /* End of the #ball.is-rising .ball-light rule. */
 
 #ball.is-winding-up .ball-light {               /* The split second before it zooms... */
   animation: none;                              /* ...it stops flickering... */
   transform: scale(0.7, 1.3);                   /* ...and squashes thin and tall... */
   transition: transform 0.15s;                  /* ...quickly. */
-}
+}   /* End of the #ball.is-winding-up .ball-light rule. */
 
 #ball.is-zooming .ball-light {                  /* While zooming away... */
   animation: none;                              /* ...no flicker... */
   transform: scale(1.9, 0.55);                  /* ...and it stretches long and flat... */
   transition: transform 0.12s;                  /* ...very quickly. */
-}
+}   /* End of the #ball.is-zooming .ball-light rule. */
 
 @keyframes flicker {                            /* The gentle flicker, like a candle. */
   0%, 100% { transform: scale(1);    opacity: 1; }      /* Normal size, fully bright. */
   30%      { transform: scale(1.08); opacity: 0.88; }   /* A little bigger and dimmer. */
   55%      { transform: scale(0.95); opacity: 1; }      /* A little smaller and bright. */
   80%      { transform: scale(1.04); opacity: 0.93; }   /* Slightly bigger again. */
-}
+}   /* End of this animation. */
 
 @keyframes glow-pulse {                         /* The breathing glow. */
   from { box-shadow: 0 0 3px #fff, 0 0 6px var(--ball-core), 0 0 11px var(--ball-glow), 0 0 17px var(--ball-glow-outer); }    /* Small glow... */
   to   { box-shadow: 0 0 5px #fff, 0 0 10px var(--ball-core), 0 0 17px var(--ball-glow), 0 0 26px var(--ball-glow-outer); }   /* ...bigger glow. Then it goes back. */
-}
+}   /* End of this animation. */
 
 @keyframes jitter {                             /* The fast side-to-side shake. */
   0%, 100% { transform: translateX(0); }                          /* Center. */
   25%      { transform: translateX(var(--shake-size)); }          /* Right. */
   75%      { transform: translateX(calc(var(--shake-size) * -1)); }   /* Left. */
-}
+}   /* End of this animation. */
 
 @keyframes form {                               /* Growing back after the fireworks. */
   0%   { transform: scale(0);   opacity: 0; }   /* Starts as nothing. */
   60%  { transform: scale(1.4); opacity: 1; }   /* Pops a little too big. */
   100% { transform: scale(1); }                 /* Settles to normal size. */
-}
+}   /* End of this animation. */
 
 
 /* ---------------------------------------------------------------------
-   12. SMALL SCREENS AND MOTION SETTINGS
+   14. SMALL SCREENS AND MOTION SETTINGS
    --------------------------------------------------------------------- */
+@media (max-width: 900px) {                     /* Tablets and small laptops. */
+  .portrait { max-width: 220px; }               /* A little smaller, so it does not crowd your bio. (Phones get their own size below.) */
+}   /* End of the rules for this screen size. */
+
 @media (max-width: 720px) {                     /* Rules inside here only apply to screens 720 pixels wide or less. */
   .case-study-body { padding: 4px 18px 40px; }  /* Less side space in the pop-up. */
   .placard { grid-template-columns: 1fr; gap: 18px; }   /* Image on top, label underneath. */
-}
+}   /* End of the rules for this screen size. */
 
 @media (max-width: 640px) {                     /* Phones. */
   .two-columns,                                 /* Two-column rows... */
   .two-columns.equal { grid-template-columns: 1fr; }   /* ...become one column. */
-  .logo { display: none; }                      /* Hide the logo so the menu fits. */
-}
+  .logo-full { display: none; }                 /* Hide the long logo so the menu fits... */
+  .logo-short { display: inline; }              /* ...and show the short "GG" logo instead. */
+  #about .two-columns { display: contents; }    /* Lets the portrait and text line up as separate rows in the About section, so the portrait can move up. */
+  .portrait { max-width: 130px; justify-self: center; order: -1; top: 0; }   /* Phones: smaller portrait, centered, at the very top of About. order: -1 means "go first." top: 0 undoes the laptop nudge. */
+  #about { padding-top: 116px; }                /* Phones: less space above your portrait, so more of About fits on the first screen. */
+}   /* End of the rules for this screen size. */
 
 @media (prefers-reduced-motion: reduce) {       /* For people who set their device to "reduce motion." */
   .case-study-panel { transition: opacity 0.2s; }                 /* Pop-up just fades, no sliding. */
-  .project-card:hover .thumbnail::after,
+  .project-card:hover .thumbnail::after,   /* No shimmer on hover... */
   button.thumbnail:hover::after { animation: none; }              /* No shimmer. */
-  .ball-light,
-  #ball.is-forming .ball-light,
+  .ball-light,   /* The ball light, */
+  #ball.is-forming .ball-light,   /* its re-forming animation, */
   #ball.is-rising .ball-light { animation: none; }                /* The ball stays still. */
-}
+}   /* End of the rules for this screen size. */

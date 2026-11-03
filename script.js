@@ -20,10 +20,11 @@
 // Change these to adjust the page without touching anything else.
 // ---------------------------------------------------------------------
 
-const BACKGROUND_COLORS = [   // One background color per section, top to bottom. Must match the number of sections.
-  [38, 34, 42],               // About. Three numbers = red, green, blue, each from 0 to 255.
-  [26, 23, 29],               // Work.
-  [15, 13, 17]                // Contact.
+const BACKGROUND_COLORS = [   // The background fades through these colors as you scroll, spread evenly from top to bottom. Add more to make more stops.
+  [41, 37, 46],               // Top of the page. Three numbers = red, green, blue, each from 0 to 255.
+  [36, 32, 40],               // One third down (around the case studies). Still fairly light.
+  [27, 24, 30],               // Two thirds down (around Playground). The darkness speeds up after this.
+  [11, 10, 13]                // The very bottom. Matches the dark fade behind the header.
 ];                            // End of the list.
 
 const SPARKLE_COLORS = [      // Trail sparkle colors for each mood. Two colors each, so the trail mixes them.
@@ -95,20 +96,10 @@ function ballIsGone() {                       // Checks whether the ball is expl
 // 4. BACKGROUND FADE AND MENU HIGHLIGHT
 // ---------------------------------------------------------------------
 
-function getScrollProgress() {                                   // Works out where you are, like 1.4 = "40% of the way from section 1 to section 2."
-  const middleOfScreen = window.scrollY + window.innerHeight / 2; // The spot in the middle of your screen, measured from the top of the page.
-  const centers = sections.map(function (section) {              // For every section, find its middle point.
-    const box = section.getBoundingClientRect();                 // Where the section is on screen right now.
-    return box.top + window.scrollY + box.height / 2;            // Its middle, measured from the top of the page.
-  });                                                            // Now "centers" is a list of middle points.
-  if (middleOfScreen <= centers[0]) return 0;                    // Above the first middle? Then we are fully in section 0.
-  if (middleOfScreen >= centers[lastSection]) return lastSection; // Below the last middle? Fully in the last section.
-  for (let i = 0; i < lastSection; i++) {                        // Look at each pair of neighboring sections.
-    if (middleOfScreen < centers[i + 1]) {                       // If we are before the next middle...
-      return i + (middleOfScreen - centers[i]) / (centers[i + 1] - centers[i]); // ...say how far between them we are.
-    }                                                            // End of if.
-  }                                                              // End of loop.
-  return lastSection;                                            // Backup answer.
+function getScrollProgress() {                                   // Works out how far down the page you are, from 0 (top) to 1 (bottom).
+  const scrollRoom = document.documentElement.scrollHeight - window.innerHeight;   // How far the page can scroll in total.
+  if (scrollRoom <= 0) return 0;                                 // Page too short to scroll? Call it the top.
+  return Math.min(1, Math.max(0, window.scrollY / scrollRoom));  // How far we have scrolled, kept between 0 and 1.
 }                                                                // End of getScrollProgress.
 
 function getCurrentSection() {                                   // Which section is in the middle of the screen right now?
@@ -125,13 +116,12 @@ function getCurrentSection() {                                   // Which sectio
 let highlightedMenuItem = -1;                                    // Which menu item is pink right now. -1 means "none yet."
 
 function updateBackgroundAndMenu() {                             // Runs every time you scroll.
-  const progress = getScrollProgress();                          // How far down we are, like 1.4.
-  const fromSection = Math.floor(progress);                      // The section we are leaving (1.4 becomes 1).
-  const toSection = Math.min(lastSection, fromSection + 1);      // The section we are heading into (never past the last one).
-  let amount = progress - fromSection;                           // How far between them (1.4 becomes 0.4).
-  amount = amount * amount * (3 - 2 * amount);                   // Smooths the blend so it eases in and out gently.
-  const fromColor = BACKGROUND_COLORS[fromSection];              // The color we are leaving.
-  const toColor = BACKGROUND_COLORS[toSection];                  // The color we are heading into.
+  const lastColor = BACKGROUND_COLORS.length - 1;                // The number of the last color (we count from 0).
+  const position = getScrollProgress() * lastColor;              // Where we are in the color list. With 3 colors, 1.4 = "40% of the way from color 1 to color 2."
+  const fromIndex = Math.min(Math.floor(position), lastColor - 1); // The color we are leaving (1.4 becomes 1).
+  const amount = position - fromIndex;                           // How far toward the next color (1.4 becomes 0.4).
+  const fromColor = BACKGROUND_COLORS[fromIndex];                // The color we are leaving.
+  const toColor = BACKGROUND_COLORS[fromIndex + 1];              // The color we are heading into.
   const red = Math.round(mix(fromColor[0], toColor[0], amount));   // Blend the red.
   const green = Math.round(mix(fromColor[1], toColor[1], amount)); // Blend the green.
   const blue = Math.round(mix(fromColor[2], toColor[2], amount));  // Blend the blue.
@@ -199,7 +189,7 @@ function makeSparkles() {                                      // Adds new spark
 
   if (moved || frameCount % 9 === 0 || (rising && frameCount % 2 === 0)) { // Add trail sparkles when moving, or now and then. % means "remainder," so % 9 === 0 is "every 9th frame."
     let howMany = 1;                                           // Usually one sparkle...
-    if (moved) howMany = 2;                                    // ...two while moving...
+    if (moved) howMany = 4;                                    // ...four while moving (raise this number for even more)...
     if (rising) howMany = 1;                                   // ...one while rising...
     if (zooming) howMany = 5;                                  // ...and five while zooming for a streak.
     for (let i = 0; i < howMany; i++) {                        // Make that many sparkles.
@@ -216,6 +206,22 @@ function makeSparkles() {                                      // Adds new spark
       });                                                      // End of this sparkle.
     }                                                          // End of loop.
   }                                                            // End of trail sparkles.
+
+  if (moved && !zooming && frameCount % 3 === 0) {             // While it moves, every 3rd frame, toss off one extra twinkle.
+    const angle = Math.random() * Math.PI * 2;                 // A random direction all the way around.
+    const distance = randomBetween(4, 12);                     // How far from the center it starts.
+    addParticle({                                              // A traveling twinkle:
+      x: center.x + Math.cos(angle) * distance,                // placed in that direction (cos = left/right part),
+      y: center.y + Math.sin(angle) * distance,                // (sin = up/down part),
+      speedX: Math.cos(angle) * 0.25,                          // drifting gently outward,
+      speedY: Math.sin(angle) * 0.25 - 0.1,                    // and a little upward,
+      lifespan: randomBetween(16, 28),                         // fading out in under half a second,
+      size: randomBetween(0.5, 1.2),                           // tiny,
+      color: Math.random() < 0.5 ? '#FFFFFF' : colors[1],      // half white, half mood color,
+      drag: 0.95,                                              // slowing down,
+      look: 'twinkle'                                          // and blinking in and out.
+    });                                                        // End of the traveling twinkle.
+  }                                                            // End of the moving twinkles.
 
   if (frameCount % 8 === 0) {                                  // Every 8th frame, add one twinkle in the halo around the ball.
     const angle = Math.random() * Math.PI * 2;                 // A random direction all the way around.
@@ -326,7 +332,7 @@ function makeFireworks(center) {                               // The explosion 
       look: 'spark'                                            // drawn as streaks.
     });                                                        // End of this spark.
   }                                                            // End of loop.
-}                                                              // End of makeFireworks.                                                             // End of makeFireworks.
+}                                                              // End of makeFireworks.
 
 function makeGatherEffect(center) {                            // Sparkles pulling in when the ball re-forms.
   for (let i = 0; i < 70; i++) {                               // 70 sparkles.
@@ -335,10 +341,10 @@ function makeGatherEffect(center) {                            // Sparkles pulli
     const lifespan = 40;                                       // They all take 40 frames to arrive.
     addParticle({                                              // A gathering sparkle:
       x: center.x + Math.cos(angle) * distance,                // starting out in a circle,
-      y: center.y + Math.sin(angle) * distance,           // (up-down),
+      y: center.y + Math.sin(angle) * distance,                // (the same idea, for up and down),
       speedX: -Math.cos(angle) * distance / lifespan,          // moving inward at just the right speed
       speedY: -Math.sin(angle) * distance / lifespan,          // to reach the center as it fades,
-      lifespan: lifespan,                                 // all fading together,
+      lifespan: lifespan,                                      // all fading together,
       size: 1.4, color: '#EFFEFF',                             // soft white,
       look: 'dot'                                              // drawn as dots.
     });                                                        // End of this sparkle.
@@ -424,15 +430,15 @@ function startTrip(target, duration, options, whenDone) {  // Starts the ball mo
 
 function moveBall(now) {                                   // Runs every frame to move the ball.
   if (currentTrip) {                                       // If it is on a trip...
-    const trip = currentTrip;                              // (short name)
+    const trip = currentTrip;                              // A shorter name, so the lines below are easier to read.
     const t = Math.max(0, Math.min(1, (now - trip.startTime) / trip.duration)); // How far through the trip, from 0 to 1.
     const eased = trip.easing(t);                          // Apply the speed curve.
     const sway = Math.sin(t * Math.PI * trip.wobbleSpeed * 2) * Math.sin(t * Math.PI) * trip.wobble; // A gentle side-to-side sway that is zero at the start and end.
     ballPosition.x = curvePoint(trip.from.x, trip.bendPoint1.x, trip.bendPoint2.x, trip.to.x, eased) + trip.sideX * sway; // New left-right position.
     ballPosition.y = curvePoint(trip.from.y, trip.bendPoint1.y, trip.bendPoint2.y, trip.to.y, eased) + trip.sideY * sway; // New up-down position.
     if (t >= 1) {                                          // Arrived?
-      ballPosition.x = trip.to.x;                          // Snap exactly to the end...
-      ballPosition.y = trip.to.y;                         // (up-down too)
+      ballPosition.x = trip.to.x;                          // Snap exactly to the end (left-right)...
+      ballPosition.y = trip.to.y;                          // ...and (up-down)...
       currentTrip = null;                                  // ...end the trip...
       if (trip.whenDone) trip.whenDone();                  // ...and do the next step, if there is one.
     }                                                      // End of if.
@@ -551,20 +557,20 @@ function reform() {                                        // Brings the ball ba
   requestAnimationFrame(function () {                      // Wait one frame for the move to show...
     requestAnimationFrame(function () {                    // ...and one more to be safe...
       makeGatherEffect(getBallCenter());                   // ...then pull sparkles in to that spot.
-    });                                                   // End of this step.
-  });                                                     // End of this step.
-  setTimeout(function () {                                 // A moment later:
+    });                                                    // End of the second wait.
+  });                                                      // End of the first wait.
+  setTimeout(function () {                                 // 0.65 seconds later (the number is at the bottom of this block):
     ballState.mood = 0;                                    // Calm again.
     ballState.touches = 0;                                 // Touch count reset.
     setColorLevel(0);                                      // Back to calm white and cyan.
     ball.classList.remove('is-gone');                      // Show the ball again...
     ball.classList.add('is-forming');                      // ...growing back in.
-    setTimeout(function () {                               // When it has grown back:
+    setTimeout(function () {                               // 1.1 seconds later, when it has grown back:
       ball.classList.remove('is-forming');                 // Done forming.
       ballState.busy = false;                              // Ready for touches.
-      setTimeout(checkIfBallShouldFollow, 1500);           // Go find the visitor if they scrolled away.
-    }, 1100);                                             // ...1.1 seconds later.
-  }, 650);                                                // ...0.65 seconds later.
+      setTimeout(checkIfBallShouldFollow, 1500);           // After 1.5 seconds, go find the visitor if they scrolled away.
+    }, 1100);                                              // 1100 milliseconds = 1.1 seconds.
+  }, 650);                                                 // 650 milliseconds = 0.65 seconds.
 }                                                          // End of reform.
 
 function driftTo(sectionNumber, evenIfSameSection) {       // Lazily floats the ball to wherever the visitor is.
@@ -578,14 +584,14 @@ function driftTo(sectionNumber, evenIfSameSection) {       // Lazily floats the 
     const spotY = spotToPixels(sectionNumber, spot).y;     // How far down the page it is.
     const distance = Math.abs(spotY - middleOfView);       // How far from the middle of the screen.
     if (distance < closestDistance) {                      // Closer than the best so far?
-      closestDistance = distance;                          // Remember it.
-      closestSpot = spot;                                 // Remember the spot too.
-    }                                                     // End of this block.
+      closestDistance = distance;                          // Remember the distance...
+      closestSpot = spot;                                  // ...and the spot.
+    }                                                      // End of if.
   });                                                      // End of checking.
   placeBall(sectionNumber, closestSpot, 'drift', function () { // Drift there. When done:
     ballState.busy = false;                                // Ready again.
     setTimeout(checkIfBallShouldFollow, 1200);             // Check again in case the visitor moved on.
-  });                                                     // End of this step.
+  });                                                      // End of the drift.
 }                                                          // End of driftTo.
 
 function checkIfBallShouldFollow() {                       // Decides if the ball should follow the visitor.
@@ -593,37 +599,43 @@ function checkIfBallShouldFollow() {                       // Decides if the bal
   const current = getCurrentSection();                     // Where the visitor is.
   if (current !== ballState.section) {                     // In a different section?
     driftTo(current);                                      // Follow them.
-    return;                                               // Stop here.
-  }                                                       // End of this block.
+    return;                                                // Stop here.
+  }                                                        // End of if.
   const box = ball.getBoundingClientRect();                // Where the ball is on screen.
   if (box.bottom < 0 || box.top > window.innerHeight) driftTo(current, true);   // Off screen in a tall section? Come into view.
 }                                                          // End of checkIfBallShouldFollow.
 
 ball.addEventListener('pointerenter', function (event) {   // When a pointer moves over the ball...
   if (event.pointerType === 'mouse') touchBall();          // ...and it is a mouse, count it as a touch.
-});                                                       // End of this step.
+});                                                        // End of the mouse listener.
 ball.addEventListener('pointerdown', function (event) {    // When a finger or pen presses the ball...
   if (event.pointerType !== 'mouse') {                     // ...(not a mouse click)...
     event.preventDefault();                                // ...stop the phone from doing anything else...
     touchBall();                                           // ...and count it as a touch.
-  }                                                       // End of this block.
-});                                                       // End of this step.
+  }                                                        // End of if.
+});                                                        // End of the finger listener.
 ball.addEventListener('keydown', function (event) {        // Keyboard users can press Enter or Space on the ball.
-  if (event.key === 'Enter' || event.key === ' ') {       // If the key was Enter or Space...
-    event.preventDefault();                                // Stop the page from scrolling on Space.
-    touchBall();                                           // Count it as a touch.
-  }                                                       // End of this block.
-});                                                       // End of this step.
+  if (event.key === 'Enter' || event.key === ' ') {        // If the key was Enter or Space...
+    event.preventDefault();                                // ...stop the page from scrolling on Space...
+    touchBall();                                           // ...and count it as a touch.
+  }                                                        // End of if.
+});                                                        // End of the keyboard listener.
 
 
 // ---------------------------------------------------------------------
-// 8. MENU GLIDE (clicking a menu item smoothly scrolls the page)
+// 8. MENU GLIDE, LOGO, AND COPY EMAIL
+// Clicking a menu item or the logo smoothly scrolls the page. The Copy
+// button copies your email.
 // ---------------------------------------------------------------------
 
 let isGliding = false;                                     // True while the page is gliding.
 
 function glideToSection(sectionNumber) {                   // Smoothly scrolls to a section.
-  const targetY = sections[sectionNumber].getBoundingClientRect().top + window.scrollY + 1;   // The top of that section on the page.
+  const title = sections[sectionNumber].querySelector('.section-title');   // The section's pink title (ABOUT, WORK, CONTACT).
+  const headerHeight = document.querySelector('header').offsetHeight;      // How tall the header (and its dark fade) is.
+  const maxY = document.documentElement.scrollHeight - window.innerHeight; // The farthest the page can scroll.
+  const wantedY = title.getBoundingClientRect().top + window.scrollY - headerHeight - 16;   // Stop so the title sits 16 pixels below the header, not under it.
+  const targetY = sectionNumber === 0 ? 0 : Math.max(0, Math.min(maxY, wantedY));   // About always goes to the very top. Others never scroll past the top or bottom.
   const startY = window.scrollY;                           // Where we are now.
   const distance = targetY - startY;                       // How far to go.
   const duration = lessMotion ? 0 : Math.min(1500, 550 + Math.abs(distance) * 0.3);   // Longer trips take longer, up to 1.5 seconds.
@@ -638,7 +650,7 @@ function glideToSection(sectionNumber) {                   // Smoothly scrolls t
     } else {                                               // Arrived:
       isGliding = false;                                   // Done gliding.
       setTimeout(function () { driftTo(sectionNumber); }, lessMotion ? 0 : 450);   // The ball drifts over after a short pause.
-    }                                                     // End of this block.
+    }                                                      // End of if.
   }                                                        // End of step.
 
   requestAnimationFrame(step);                             // Start the first step.
@@ -647,8 +659,42 @@ function glideToSection(sectionNumber) {                   // Smoothly scrolls t
 menuButtons.forEach(function (button) {                    // For every menu button...
   button.addEventListener('click', function () {           // ...when clicked...
     glideToSection(Number(button.dataset.go));             // ...glide to its section. dataset.go reads data-go from the HTML.
-  });                                                     // End of this step.
-});                                                       // End of this step.
+  });                                                      // End of the click listener.
+});                                                        // End of forEach.
+
+
+document.querySelectorAll('.say-hello').forEach(function (link) {   // Every "Say hello" link...
+  link.addEventListener('click', function (event) {        // ...when clicked...
+    event.preventDefault();                                // ...skips the normal jump...
+    glideToSection(2);                                     // ...and glides to Contact (section number 2) instead.
+  });                                                      // End of the click listener.
+});                                                        // End of forEach.
+
+document.getElementById('logo').addEventListener('click', function (event) {   // Clicking the logo...
+  event.preventDefault();                                  // ...skips the normal jump...
+  glideToSection(0);                                       // ...and glides back to the top instead.
+});                                                        // End of the logo listener.
+
+const copyButton = document.getElementById('copy-email');  // The Copy button next to your email.
+copyButton.addEventListener('click', function () {         // When clicked:
+  const text = copyButton.dataset.copy;                    // The email to copy (from data-copy in index.html).
+  function showCopied() {                                  // Briefly says "Copied" so people know it worked.
+    copyButton.textContent = 'Copied';                     // Change the label...
+    setTimeout(function () { copyButton.textContent = 'Copy'; }, 2000);   // ...and change it back after 2 seconds.
+  }                                                        // End of showCopied.
+  function selectInstead() {                               // Backup plan if copying is not allowed:
+    const range = document.createRange();                  // Make an empty "selection area"...
+    range.selectNodeContents(document.querySelector('.email'));   // ...stretch it over the email...
+    const selection = window.getSelection();               // ...grab the page's current selection...
+    selection.removeAllRanges();                           // ...clear whatever was selected before...
+    selection.addRange(range);                             // ...and select the email, so the visitor can press copy themselves.
+  }                                                        // End of selectInstead.
+  if (navigator.clipboard && navigator.clipboard.writeText) {   // Can this browser copy?
+    navigator.clipboard.writeText(text).then(showCopied, selectInstead);   // Try it. If it works, say Copied. If not, select the email.
+  } else {                                                 // Older browser?
+    selectInstead();                                       // Select the email instead.
+  }                                                        // End of if.
+});                                                        // End of the Copy listener.
 
 
 // ---------------------------------------------------------------------
@@ -661,103 +707,89 @@ window.addEventListener('scroll', function () {            // Every time the pag
   updateBackgroundAndMenu();                               // Update the background color and menu.
   clearTimeout(followTimer);                               // Cancel the last follow timer...
   followTimer = setTimeout(function () {                   // ...and start a new one, so the ball only follows after you stop.
-    if (!isGliding) checkIfBallShouldFollow();            // Follow, unless the page is mid-glide.
-  }, FOLLOW_WAIT);                                        // Wait FOLLOW_WAIT milliseconds (see Easy Settings).
+    if (!isGliding) checkIfBallShouldFollow();             // Follow, unless the page is mid-glide.
+  }, FOLLOW_WAIT);                                         // Wait FOLLOW_WAIT milliseconds (see Easy Settings).
 }, { passive: true });                                     // "passive" tells the browser we will not block scrolling, so it stays smooth.
 
 window.addEventListener('resize', function () {            // When the window changes size:
   resizeCanvas();                                          // Resize the sparkle canvas.
   const calmTrip = currentTrip && !ballHas('is-rising') && !ballHas('is-zooming') && !ballHas('is-winding-up');   // Is it on a normal trip?
-  if (calmTrip) {                                         // If it is on a normal trip...
-    currentTrip.to = spotToPixels(ballState.section, ballState.spot);   // Re-aim the trip at the spot's new position.
-  } else if (!currentTrip && !ballState.busy) {           // Otherwise, if it is sitting still...
-    placeBall(ballState.section, ballState.spot, 'instant');           // Not moving? Just snap to the spot's new position.
-  }                                                       // End of this block.
+  if (calmTrip) {                                          // If it is on a normal trip...
+    currentTrip.to = spotToPixels(ballState.section, ballState.spot);   // ...re-aim the trip at the spot's new position.
+  } else if (!currentTrip && !ballState.busy) {            // Otherwise, if it is sitting still...
+    placeBall(ballState.section, ballState.spot, 'instant');           // ...just snap to the spot's new position.
+  }                                                        // End of if.
   highlightedMenuItem = -1;                                // Force the menu to re-check.
   updateBackgroundAndMenu();                               // Refresh colors.
-});                                                       // End of this step.
+  peekCarousels.forEach(updatePeekArrows);                 // Re-check the card-row arrows (see section 10).
+});                                                        // End of the resize listener.
 
 let stuckSince = 0;                                        // When the ball first looked stuck.
 setInterval(function () {                                  // setInterval repeats forever. This runs every half second.
   const looksStuck = ballState.busy && !currentTrip && !ballIsGone() && !ballHas('is-forming');   // Busy but nothing is happening?
   if (!looksStuck) {                                       // Not stuck:
-    stuckSince = 0;                                        // reset the timer.
-    return;                                               // Stop here.
-  }                                                       // End of this block.
+    stuckSince = 0;                                        // reset the timer,
+    return;                                                // and stop here.
+  }                                                        // End of if.
   if (!stuckSince) stuckSince = Date.now();                // Just got stuck? Note the time.
   if (Date.now() - stuckSince > 2500) {                    // Stuck for over 2.5 seconds?
     ballState.busy = false;                                // Free it.
     ballState.touches = 0;                                 // Reset touches.
     ball.classList.remove('is-rising', 'is-zooming', 'is-winding-up');   // Clear any leftover looks.
     stuckSince = 0;                                        // Reset the timer.
-  }                                                       // End of this block.
-}, 500);                                                  // Repeat every 0.5 seconds.
+  }                                                        // End of if.
+}, 500);                                                   // Repeat every 500 milliseconds (0.5 seconds).
 
 
 // ---------------------------------------------------------------------
-// 9b. PEEK CAROUSEL (the sideways row of project cards)
+// 10. PEEK CAROUSELS (the sideways rows of cards in Work and Playground)
 // ---------------------------------------------------------------------
 
-const projectRow = document.getElementById('project-row');                  // The scrolling row of cards.
-const peekArrows = Array.from(document.querySelectorAll('.peek-arrow'));    // The two arrow buttons: [left, right].
-const peekControls = document.querySelector('.peek-controls');              // The box holding both arrows.
+const peekCarousels = Array.from(document.querySelectorAll('.peek-carousel'));   // Every sideways-scrolling card row.
 
-function scrollProjects(direction) {                       // Scrolls the row one card left (-1) or right (1).
-  const firstCard = projectRow.querySelector('.project-card');   // Any card works; they are all the same width.
-  const gap = parseFloat(getComputedStyle(projectRow).columnGap) || 18;   // The space between cards, read from style.css.
-  const oneCard = firstCard.getBoundingClientRect().width + gap;          // How far one card step is.
-  projectRow.scrollBy({ left: oneCard * direction });      // Scroll by one card. style.css makes it glide smoothly.
+function scrollProjects(carousel, direction) {              // Scrolls one carousel one card left (-1) or right (1).
+  const row = carousel.querySelector('.peek-row');          // The scrolling row inside this carousel.
+  const firstCard = row.querySelector('.project-card');     // Any card works; they are all the same width.
+  if (!firstCard) return;                                   // No cards? Stop.
+  const gap = parseFloat(getComputedStyle(row).columnGap) || 18;   // The space between cards, read from style.css.
+  const oneCard = firstCard.getBoundingClientRect().width + gap;   // How far one card step is.
+  row.scrollBy({ left: oneCard * direction });              // Scroll by one card. style.css makes it glide smoothly.
 }                                                          // End of scrollProjects.
 
-function updatePeekArrows() {                              // Fades out an arrow when there is nowhere left to go.
-  const atStart = projectRow.scrollLeft <= 2;              // Scrolled all the way left?
-  const atEnd = projectRow.scrollLeft + projectRow.clientWidth >= projectRow.scrollWidth - 2;   // Scrolled all the way right?
-  peekArrows[0].disabled = atStart;                        // Left arrow off at the start.
-  peekArrows[1].disabled = atEnd;                          // Right arrow off at the end.
-  peekControls.hidden = atStart && atEnd;                  // If every card already fits, hide both arrows.
+function updatePeekArrows(carousel) {                       // Fades out an arrow when there is nowhere left to go.
+  const row = carousel.querySelector('.peek-row');          // The scrolling row.
+  const controls = carousel.querySelector('.peek-controls');   // The box holding both arrows.
+  const arrows = Array.from(carousel.querySelectorAll('.peek-arrow'));  // The two arrow buttons.
+  const atStart = row.scrollLeft <= 2;                      // Scrolled all the way left?
+  const atEnd = row.scrollLeft + row.clientWidth >= row.scrollWidth - 2;   // Scrolled all the way right?
+  arrows[0].disabled = atStart;                             // Left arrow off at the start.
+  arrows[1].disabled = atEnd;                               // Right arrow off at the end.
+  controls.hidden = atStart && atEnd;                       // If every card already fits, hide both arrows.
+  row.classList.toggle('not-at-start', !atStart);           // Turns on the soft left fade once you scroll (style.css).
+  row.classList.toggle('at-end', atEnd);                    // Turns off the soft right fade at the last card, so it shows fully.
 }                                                          // End of updatePeekArrows.
 
-peekArrows.forEach(function (arrow) {                      // For each arrow...
-  arrow.addEventListener('click', function () {            // ...when clicked...
-    scrollProjects(Number(arrow.dataset.direction));       // ...scroll in its direction.
-  });                                                      // End of this step.
-});                                                        // End of this step.
-
-projectRow.addEventListener('scroll', updatePeekArrows, { passive: true });   // Re-check the arrows whenever the row scrolls.
-window.addEventListener('resize', updatePeekArrows);       // Re-check when the window changes size.
-updatePeekArrows();                                        // Check once at the start.
-
-
-// ---------------------------------------------------------------------
-// 10b. PLAYGROUND "SHOW ALL" BUTTON
-// ---------------------------------------------------------------------
-
-const playground = document.getElementById('playground');               // The Playground group.
-const playgroundToggle = document.getElementById('playground-toggle');  // The Show all button.
-const extraCards = playground.querySelectorAll('.playground-card.extra').length;   // How many cards are hidden at first.
-const totalCards = playground.querySelectorAll('.playground-card').length;        // How many cards there are in all.
-
-function updatePlaygroundButton() {                        // Sets the button's words.
-  const open = playground.classList.contains('show-all');  // Are all cards showing?
-  playgroundToggle.textContent = open ? 'Show fewer' : 'Show all ' + totalCards;   // "Show all 11" or "Show fewer."
-  playgroundToggle.setAttribute('aria-expanded', open ? 'true' : 'false');   // Tells screen readers whether it is open.
-  playgroundToggle.hidden = extraCards === 0;              // No hidden cards? No button needed.
-}                                                          // End of updatePlaygroundButton.
-
-playgroundToggle.addEventListener('click', function () {   // When the button is clicked...
-  playground.classList.toggle('show-all');                 // ...show or hide the extra cards (style.css does the hiding)...
-  updatePlaygroundButton();                                // ...and update the words.
-});                                                        // End of this step.
-
-updatePlaygroundButton();                                  // Set the words once at the start.
+peekCarousels.forEach(function (carousel) {                // For each sideways-scrolling row...
+  const arrows = Array.from(carousel.querySelectorAll('.peek-arrow'));   // ...get its arrows.
+  const row = carousel.querySelector('.peek-row');          // ...and its row.
+  arrows.forEach(function (arrow) {                         // For each arrow in this carousel...
+    arrow.addEventListener('click', function () {           // ...when clicked...
+      scrollProjects(carousel, Number(arrow.dataset.direction));   // ...scroll this row in its direction.
+    });                                                     // End of the click listener.
+  });                                                       // End of the arrows.
+  row.addEventListener('scroll', function () { updatePeekArrows(carousel); }, { passive: true });   // Re-check the arrows whenever the row scrolls.
+  updatePeekArrows(carousel);                               // Check once at the start.
+});                                                         // End of peek carousel setup.
 
 
 // ---------------------------------------------------------------------
-// 10. CASE STUDY POP-UP
+// 11. CASE STUDY POP-UP
 // Each project's words live here. Add a new project by copying one block.
 // The id (like 'dsff') must match data-open="dsff" in index.html.
 // ---------------------------------------------------------------------
 
+// TO ADD A CASE STUDY: copy one whole project block below, paste it before "End of PROJECTS," give it a new id,
+// and add that id to PROJECT_ORDER. The full steps are in HOW TO #1 at the top of index.html.
 const PROJECTS = {                                         // All the case studies. Each id must match data-open="..." in index.html.
   'dsff': {                                                // Project id.
     title: 'Dark Scenes with the Fear Forge',              // Title on the wall label.
@@ -765,65 +797,76 @@ const PROJECTS = {                                         // All the case studi
     materials: 'Wood, speakers, printed cards, tools used', // Materials or tools.
     role: 'Your role',                                     // Your role.
     note: 'A horror card game and handcrafted sound instrument that helps children ages 8 to 12 build emotional resilience.',   // One-sentence description.
+    media: '',                                             // Your hero image or video file, like 'images/dsff.jpg' or 'images/dsff-loop.mp4'. Leave '' for the gray stand-in.
+    quote: { text: 'A short quote from a player, teacher, or partner goes here.', by: 'Name, role' },   // Delete this line if there is no quote.
     sections: [                                            // The story parts. Each is [heading, the HTML inside it].
-      ['Overview', '<p class="body-text">A handcrafted, coffin-shaped sound instrument and horror card game that helps children ages 8 to 12 build emotional resilience. Players face their fears together through sound, story, and play.</p>'],
-      ['Process', '<p class="body-text">Two or three short paragraphs on research, early sketches, and how the instrument and card game came together.</p><div class="project-grid"><div class="placeholder" style="aspect-ratio:4/3">sketch</div><div class="placeholder" style="aspect-ratio:4/3">prototype</div><div class="placeholder" style="aspect-ratio:4/3">build</div></div>'],
-      ['Playtest', '<p class="body-text">Who played, what you watched for, and the moments that surprised you. A pull quote from a player works well here.</p><div class="placeholder" style="aspect-ratio:16/9">playtest photo or clip</div>'],
-      ['Outcomes', '<p class="body-text">Results from playtest data, what you would do next, and what you learned as a designer.</p>']
-    ]
-  },
+      ['Overview', '<p class="body-text">A handcrafted, coffin-shaped sound instrument and horror card game that helps children ages 8 to 12 build emotional resilience. Players face their fears together through sound, story, and play.</p>'],   // Story part "Overview". Change the words between <p> and </p>.
+      ['Process', '<p class="body-text">Two or three short paragraphs on research, early sketches, and how the instrument and card game came together.</p><div class="project-grid"><div class="placeholder" style="aspect-ratio:4/3">sketch</div><div class="placeholder" style="aspect-ratio:4/3">prototype</div><div class="placeholder" style="aspect-ratio:4/3">build</div></div>'],   // Story part "Process". Change the words between <p> and </p>. The gray <div> boxes are stand-in pictures.
+      ['Playtest', '<p class="body-text">Who played, what you watched for, and the moments that surprised you. A pull quote from a player works well here.</p><div class="placeholder" style="aspect-ratio:16/9">playtest photo or clip</div>'],   // Story part "Playtest". Change the words between <p> and </p>. The gray <div> boxes are stand-in pictures.
+      ['Outcomes', '<p class="body-text">Results from playtest data, what you would do next, and what you learned as a designer.</p>']   // Story part "Outcomes". Change the words between <p> and </p>.
+    ]   // End of the story parts.
+  },   // End of this project.
   'career-explorer': {                                     // Game Career Explorer.
-    title: 'Game Career Explorer',
-    year: '2026',
-    materials: 'HTML, CSS, JavaScript, Unity',
-    role: 'Lead developer and experience designer, Harlem Gallery of Science',
-    note: 'An interactive web experience that simulates a game studio internship across seven departments, ending in the Unity demo game Patch and Watt: Split Spark.',
-    sections: [
-      ['Overview', '<p class="body-text">An interactive web experience that simulates a game studio internship across seven departments. Visitors earn a badge for each department, then play a Unity demo game that ties their learning together.</p>'],
-      ['Process', '<p class="body-text">How you mapped studio roles into playable moments and built the badge system.</p>'],
-      ['Patch and Watt: Split Spark', '<p class="body-text">The capstone Unity demo game, and how it connects to what visitors learned.</p>'],
-      ['Outcomes', '<p class="body-text">Feedback, results, and next steps.</p>']
-    ]
-  },
+    title: 'Game Career Explorer',   // The project's name. Change the words between the quotes.
+    year: '2026',   // The year you made it, like '2025'.
+    materials: 'HTML, CSS, JavaScript, Unity',   // What you made it with: materials or software.
+    role: 'Lead developer and experience designer, Harlem Gallery of Science',   // Your role, shown on the wall label.
+    note: 'An interactive web experience that simulates a game studio internship across seven departments, ending in the Unity demo game Patch and Watt: Split Spark.',   // The short description on the wall label.
+    media: '',                                             // Your hero image or video file, like 'images/dsff.jpg' or 'images/dsff-loop.mp4'. Leave '' for the gray stand-in.
+    quote: { text: 'A short quote from a player, teacher, or partner goes here.', by: 'Name, role' },   // Delete this line if there is no quote.
+    sections: [   // The story parts. Each part is ['Heading', 'words and pictures'].
+      ['Overview', '<p class="body-text">An interactive web experience that simulates a game studio internship across seven departments. Visitors earn a badge for each department, then play a Unity demo game that ties their learning together.</p>'],   // Story part "Overview". Change the words between <p> and </p>.
+      ['Process', '<p class="body-text">How you mapped studio roles into playable moments and built the badge system.</p>'],   // Story part "Process". Change the words between <p> and </p>.
+      ['Patch and Watt: Split Spark', '<p class="body-text">The capstone Unity demo game, and how it connects to what visitors learned.</p>'],   // Story part "Patch and Watt: Split Spark". Change the words between <p> and </p>.
+      ['Outcomes', '<p class="body-text">Feedback, results, and next steps.</p>']   // Story part "Outcomes". Change the words between <p> and </p>.
+    ]   // End of the story parts.
+  },   // End of this project.
   'trailblazer-heroes': {                                  // Trailblazer Heroes. You did not create the game, so "credit" says who did.
-    title: 'Trailblazer Heroes: The AAPI Card Game',
-    year: 'Year',
+    title: 'Trailblazer Heroes: The AAPI Card Game',   // The project's name. Change the words between the quotes.
+    year: 'Year',   // The year you made it, like '2025'.
     credit: 'Game by [creator]. Curriculum Guide by Brandy Coleman.',   // Replaces the usual "Brandy Coleman, year" line. Put the creator's name in.
-    materials: 'Printed card game and curriculum guide',
-    role: 'Content research and writing lead; author of the first-edition Curriculum Guide',
-    note: 'A card game celebrating Asian American and Pacific Islander trailblazers. My work: the research, the writing, and the guide that brings it into classrooms.',
-    sections: [
-      ['Overview', '<p class="body-text">What the game is, who it is for, and who created it.</p>'],
-      ['My role', '<p class="body-text">How you led the content research and writing team.</p>'],
-      ['The Curriculum Guide', '<p class="body-text">How you designed the first-edition guide for teachers.</p><div class="placeholder" style="aspect-ratio:16/9">guide pages</div>'],
-      ['Impact', '<p class="body-text">Over 100 units sold. Add any feedback from teachers or players.</p>']
-    ]
-  },
+    materials: 'Printed card game and curriculum guide',   // What you made it with: materials or software.
+    role: 'Content research and writing lead; author of the first-edition Curriculum Guide',   // Your role, shown on the wall label.
+    note: 'A card game celebrating Asian American and Pacific Islander trailblazers. My work: the research, the writing, and the guide that brings it into classrooms.',   // The short description on the wall label.
+    media: '',                                             // Your hero image or video file, like 'images/dsff.jpg' or 'images/dsff-loop.mp4'. Leave '' for the gray stand-in.
+    quote: { text: 'A short quote from a player, teacher, or partner goes here.', by: 'Name, role' },   // Delete this line if there is no quote.
+    sections: [   // The story parts. Each part is ['Heading', 'words and pictures'].
+      ['Overview', '<p class="body-text">What the game is, who it is for, and who created it.</p>'],   // Story part "Overview". Change the words between <p> and </p>.
+      ['My role', '<p class="body-text">How you led the content research and writing team.</p>'],   // Story part "My role". Change the words between <p> and </p>.
+      ['The Curriculum Guide', '<p class="body-text">How you designed the first-edition guide for teachers.</p><div class="placeholder" style="aspect-ratio:16/9">guide pages</div>'],   // Story part "The Curriculum Guide". Change the words between <p> and </p>. The gray <div> boxes are stand-in pictures.
+      ['Impact', '<p class="body-text">Over 100 units sold. Add any feedback from teachers or players.</p>']   // Story part "Impact". Change the words between <p> and </p>.
+    ]   // End of the story parts.
+  },   // End of this project.
   'shifty-friend': {                                       // Shifty Friend.
-    title: 'Shifty Friend',
-    year: 'Year',
-    materials: 'Tools used',
-    role: 'Your role',
-    note: 'An AI interactive. One sentence about what players do and what it explores.',
-    sections: [
-      ['Overview', '<p class="body-text">What players do, and the question the piece explores.</p>'],
-      ['Designing the AI character', '<p class="body-text">How you shaped its personality, rules, and limits.</p>'],
-      ['Outcomes', '<p class="body-text">What players did and what you learned.</p>']
-    ]
-  },
+    title: 'Shifty Friend',   // The project's name. Change the words between the quotes.
+    year: 'Year',   // The year you made it, like '2025'.
+    materials: 'Tools used',   // What you made it with: materials or software.
+    role: 'Your role',   // Your role, shown on the wall label.
+    note: 'An AI interactive. One sentence about what players do and what it explores.',   // The short description on the wall label.
+    media: '',                                             // Your hero image or video file, like 'images/dsff.jpg' or 'images/dsff-loop.mp4'. Leave '' for the gray stand-in.
+    quote: { text: 'A short quote from a player, teacher, or partner goes here.', by: 'Name, role' },   // Delete this line if there is no quote.
+    sections: [   // The story parts. Each part is ['Heading', 'words and pictures'].
+      ['Overview', '<p class="body-text">What players do, and the question the piece explores.</p>'],   // Story part "Overview". Change the words between <p> and </p>.
+      ['Designing the AI character', '<p class="body-text">How you shaped its personality, rules, and limits.</p>'],   // Story part "Designing the AI character". Change the words between <p> and </p>.
+      ['Outcomes', '<p class="body-text">What players did and what you learned.</p>']   // Story part "Outcomes". Change the words between <p> and </p>.
+    ]   // End of the story parts.
+  },   // End of this project.
   'steamnasium': {                                         // STEAMnasium photo booth and I Spy.
-    title: 'STEAMnasium Photo Booth and I Spy',
-    year: 'Year',
-    materials: 'Fabrication, tools used',
-    role: 'Your role',
-    note: 'Hands-on visitor experiences: a photo booth and an I Spy game with custom tools.',
-    sections: [
-      ['Overview', '<p class="body-text">Where these lived and who used them.</p>'],
-      ['The photo booth', '<p class="body-text">How you designed and built it.</p><div class="placeholder" style="aspect-ratio:16/9">photo booth</div>'],
-      ['The I Spy game and tools', '<p class="body-text">How the game worked and what you made for it.</p>'],
-      ['Outcomes', '<p class="body-text">How visitors responded.</p>']
-    ]
-  }
+    title: 'STEAMnasium Photo Booth and I Spy',   // The project's name. Change the words between the quotes.
+    year: '2025 and 2026',   // The year you made it, like '2025'.
+    credit: 'Teachers College Game Research Lab, 2025 and 2026',   // Replaces the usual "Brandy Coleman, year" line, since this was a team project.
+    materials: 'Fabrication, tools used',   // What you made it with: materials or software.
+    role: 'Co-designer and fabricator',   // Your role, shown on the wall label.
+    note: 'Interactive exhibit experiences co-designed and fabricated for a public STEAM learning event: a photo booth and an I Spy game with custom tools.',   // The short description on the wall label.
+    media: '',                                             // Your hero image or video file, like 'images/dsff.jpg' or 'images/dsff-loop.mp4'. Leave '' for the gray stand-in.
+    quote: { text: 'A short quote from a player, teacher, or partner goes here.', by: 'Name, role' },   // Delete this line if there is no quote.
+    sections: [   // The story parts. Each part is ['Heading', 'words and pictures'].
+      ['Overview', '<p class="body-text">Where these lived and who used them.</p>'],   // Story part "Overview". Change the words between <p> and </p>.
+      ['The photo booth', '<p class="body-text">How you designed and built it.</p><div class="placeholder" style="aspect-ratio:16/9">photo booth</div>'],   // Story part "The photo booth". Change the words between <p> and </p>. The gray <div> boxes are stand-in pictures.
+      ['The I Spy game and tools', '<p class="body-text">How the game worked and what you made for it.</p>'],   // Story part "The I Spy game and tools". Change the words between <p> and </p>.
+      ['Outcomes', '<p class="body-text">How visitors responded.</p>']   // Story part "Outcomes". Change the words between <p> and </p>.
+    ]   // End of the story parts.
+  }   // End of this project.
 };                                                         // End of PROJECTS.
 
 const PROJECT_ORDER = ['dsff', 'career-explorer', 'trailblazer-heroes', 'shifty-friend', 'steamnasium'];   // The order the "Next" button follows.
@@ -848,6 +891,29 @@ function getNextProjectId(id) {                            // Finds the project 
   return PROJECT_ORDER[(position + 1) % PROJECT_ORDER.length];   // The next one. % wraps back to the first after the last.
 }                                                          // End of getNextProjectId.
 
+function putMedia(box, file, alt, label) {               // Shows a photo, GIF, or video in a box, or a gray stand-in if there is no file yet.
+  box.textContent = '';                                    // Clear the box.
+  box.classList.toggle('placeholder', !file);              // Gray stand-in look only when there is no file.
+  if (!file) {                                             // No file yet?
+    box.textContent = label;                               // Show the stand-in words.
+    return;                                                // Done.
+  }                                                        // End of if.
+  const isVideo = /\.(mp4|webm|mov)$/i.test(file);        // Does the file name end in .mp4, .webm, or .mov? Then it is a video.
+  const item = document.createElement(isVideo ? 'video' : 'img');   // Make a video or an image.
+  item.src = file;                                         // Point it at your file.
+  if (isVideo) {                                           // For videos:
+    item.muted = true;                                     // no sound (browsers only autoplay silent videos),
+    item.loop = true;                                      // play on repeat,
+    item.playsInline = true;                               // play inside the page on phones, not full screen,
+    item.setAttribute('aria-label', alt);                  // describe it for screen readers,
+    if (lessMotion) item.controls = true;                  // and for less motion, show play controls instead of autoplaying...
+    else item.autoplay = true;                             // ...otherwise start playing right away.
+  } else {                                                 // For photos and GIFs:
+    item.alt = alt;                                        // describe it for screen readers.
+  }                                                        // End of if.
+  box.appendChild(item);                                   // Put it in the box.
+}                                                          // End of putMedia.
+
 function fillPopup(id) {                                   // Puts a project's words into the pop-up.
   const project = PROJECTS[id];                            // Look up the project.
   openProjectId = id;                                      // Remember it.
@@ -856,11 +922,17 @@ function fillPopup(id) {                                   // Puts a project's w
   document.getElementById('case-materials').textContent = project.materials;            // Materials.
   document.getElementById('case-role').textContent = project.role;                      // Role.
   document.getElementById('case-note').textContent = project.note;                      // Description.
-  document.getElementById('case-media').innerHTML = 'hero image or video<br>' + project.title;   // Placeholder image label.
+  putMedia(document.getElementById('case-media'), project.media, project.title, 'hero image or video · ' + project.title);   // Hero image, video, or stand-in.
+  const quote = document.getElementById('case-quote');     // The quote box.
+  quote.hidden = !project.quote;                           // Hide it if this project has no quote.
+  if (project.quote) {                                     // Has a quote?
+    document.getElementById('case-quote-text').textContent = '“' + project.quote.text + '”';   // The quote, in curly quote marks.
+    document.getElementById('case-quote-by').textContent = project.quote.by;                    // Who said it.
+  }                                                        // End of if.
   let storyHTML = '';                                      // Start with an empty story.
   project.sections.forEach(function (part) {               // For each story part...
     storyHTML += '<section class="story-section"><h3>' + part[0] + '</h3>' + part[1] + '</section>';   // ...add its heading and content.
-  });                                                     // End of this step.
+  });                                                      // End of the story parts.
   document.getElementById('case-story').innerHTML = storyHTML;   // Put the story on the page.
   nextButton.textContent = 'Next: ' + PROJECTS[getNextProjectId(id)].title;   // Label the Next button.
   popupPanel.scrollTop = 0;                                // Start at the top of the panel.
@@ -874,7 +946,7 @@ function openPopup(id, cameFromLink) {                     // Opens a case study
   document.documentElement.classList.add('no-scroll');     // Freeze the page behind it.
   requestAnimationFrame(function () {                      // Wait two frames so the slide-up animation plays.
     requestAnimationFrame(function () { popup.classList.add('open'); });  // ...then add "open" to slide it up.
-  });                                                     // End of this step.
+  });                                                      // End of the wait.
   if (!cameFromLink) setAddress('#' + id);                 // Put #dsff (etc.) in the address bar so the link can be shared.
   setTimeout(function () { closeButton.focus(); }, 60);    // Select the Close button for keyboard users.
 }                                                          // End of openPopup.
@@ -887,52 +959,360 @@ function closePopup() {                                    // Closes the case st
     popup.hidden = true;                                   // hide it,
     document.documentElement.classList.remove('no-scroll');   // unfreeze the page,
     if (focusBeforePopup && focusBeforePopup.focus) focusBeforePopup.focus();   // and return focus where it was.
-  }, lessMotion ? 0 : 380);                               // ...0.38 seconds later (right away for less motion).
+  }, lessMotion ? 0 : 380);                                // 0.38 seconds later (right away for less motion).
 }                                                          // End of closePopup.
 
 document.addEventListener('click', function (event) {      // Any click anywhere:
-  const opener = event.target.closest('[data-open]');      // Was it on (or inside) something with data-open?
-  if (opener) {                                           // If yes...
-    event.preventDefault();                                // Stop any default action.
-    openPopup(opener.dataset.open);                        // Open that project.
-  }                                                       // End of this block.
-});                                                       // End of this step.
+  const opener = event.target.closest('[data-open]');      // Was it on (or inside) a case study card or button?
+  if (opener) {                                            // If yes...
+    event.preventDefault();                                // ...stop any default action...
+    openPopup(opener.dataset.open);                        // ...and open that case study.
+    return;                                                // Done.
+  }                                                        // End of if.
+  const quickOpener = event.target.closest('[data-quick]');   // Was it on (or inside) a Playground card?
+  if (quickOpener) openQuickLook(quickOpener.dataset.quick);  // If yes, open its quick look (see section 12).
+});                                                        // End of the click listener.
 
 document.addEventListener('keydown', function (event) {    // Any key press:
   const selected = document.activeElement;                 // What is selected right now.
-  if ((event.key === 'Enter' || event.key === ' ') && selected && selected.classList.contains('project-card')) {   // Enter or Space on a project card?
-    event.preventDefault();                               // Stop the browser from doing its usual thing.
-    openPopup(selected.dataset.open);                      // Open it.
-  }                                                       // End of this block.
-  if (event.key === 'Escape') closePopup();                // Esc closes the pop-up.
-  if (event.key === 'Tab' && !popup.hidden) {              // Tab inside the pop-up: keep focus inside it.
-    const focusable = Array.from(popup.querySelectorAll('button, a, [tabindex="0"]'));   // Everything you can Tab to inside.
-    if (!focusable.length) return;                        // Nothing to focus? Stop.
+  if ((event.key === 'Enter' || event.key === ' ') && selected && (selected.dataset.open || selected.dataset.quick)) {   // Enter or Space on a card?
+    event.preventDefault();                                // Stop the browser from doing its usual thing.
+    if (selected.dataset.open) openPopup(selected.dataset.open);    // A case study card opens its case study...
+    else openQuickLook(selected.dataset.quick);            // ...and a Playground card opens its quick look.
+  }                                                        // End of if.
+  if (event.key === 'Escape') {                            // Esc...
+    closePopup();                                          // ...closes the case study pop-up...
+    closeQuickLook();                                      // ...and the quick look, whichever is open.
+  }                                                        // End of if.
+  const openDialog = !popup.hidden ? popup : (!quickLook.hidden ? quickLook : null);   // Which pop-up is open, if any.
+  if (event.key === 'Tab' && openDialog) {                 // Tab inside a pop-up: keep focus inside it.
+    const focusable = Array.from(openDialog.querySelectorAll('button, a, [tabindex="0"]')).filter(function (item) { return !item.classList.contains('is-placeholder'); });   // Everything you can Tab to inside (skipping faded placeholder links).
+    if (!focusable.length) return;                         // Nothing to focus? Stop.
     const first = focusable[0];                            // The first one.
     const last = focusable[focusable.length - 1];          // The last one.
-    if (event.shiftKey && document.activeElement === first) {   // Shift+Tab on the first? Jump to the last.
-      event.preventDefault();                             // Stop the browser from doing its usual thing.
-      last.focus();                                       // Jump to the last.
-    } else if (!event.shiftKey && document.activeElement === last) {   // Tab on the last? Jump to the first.
-      event.preventDefault();                             // Stop the browser from doing its usual thing.
-      first.focus();                                      // Jump to the first.
-    }                                                     // End of this block.
-  }                                                       // End of this block.
-});                                                       // End of this step.
+    if (event.shiftKey && document.activeElement === first) {   // Shift+Tab on the first one?
+      event.preventDefault();                              // Stop the browser from doing its usual thing...
+      last.focus();                                        // ...and jump to the last one.
+    } else if (!event.shiftKey && document.activeElement === last) {   // Tab on the last one?
+      event.preventDefault();                              // Stop the browser from doing its usual thing...
+      first.focus();                                       // ...and jump to the first one.
+    }                                                      // End of if.
+  }                                                        // End of the Tab check.
+});                                                        // End of the key listener.
 
 closeButton.addEventListener('click', closePopup);         // The Close button closes it.
 popup.addEventListener('click', function (event) {         // Clicking the dark area outside the panel...
   if (event.target === popup) closePopup();                // ...closes it too.
-});                                                       // End of this step.
+});                                                        // End of the outside-click listener.
 nextButton.addEventListener('click', function () {         // The Next button:
   const nextId = getNextProjectId(openProjectId);          // find the next project,
   fillPopup(nextId);                                       // show it,
   setAddress('#' + nextId);                                // and update the address bar.
-});                                                       // End of this step.
+});                                                        // End of the Next listener.
 
 
 // ---------------------------------------------------------------------
-// 11. START EVERYTHING
+// 12. PLAYGROUND QUICK LOOK
+// A smaller pop-up for each Playground project. Each project's words and
+// links live here. The id (like 'graveyard') must match data-quick="graveyard"
+// in index.html.
+//   media         = your screenshot, GIF, or short video file, like 'images/graveyard.gif'.
+//                   Leave '' for the gray stand-in.
+//   note          = one line on what it is.
+//   why, special, teaches = the three short parts under the note. Leave one
+//                   out (delete its line) and that part simply does not show.
+//   photos: true  = show a row of 3 photos instead of one big picture.
+//                   Visitors click a small photo to see it large underneath.
+//                   For real photos, list the files instead of true, like:
+//                   photos: ['photos/windchimes-1.jpg', 'photos/windchimes-2.jpg', 'photos/windchimes-3.jpg'],
+//   links         = the pink buttons. Paste a web address between the quotes
+//                   after url:. Until you do, the button shows faded and cannot
+//                   be clicked, so it never leads nowhere.
+// ---------------------------------------------------------------------
+
+// TO ADD A PLAYGROUND PROJECT: copy one whole project block below, paste it inside the list, and give it a new id
+// that matches data-quick in index.html. The full steps are in HOW TO #2 at the top of index.html.
+const QUICK_LOOKS = {                                      // All the Playground projects.
+  'alt-controller': {   // Project id. Must match data-quick="alt-controller" in index.html.
+    title: 'Alternative controller game',   // The project's name. Change the words between the quotes.
+    role: 'Your role · 2024',   // Your role and the year, shown in pink.
+    tags: ['Game', 'Physical'],   // The small tags. Each word goes in quotes, with commas between.
+    note: 'Game jam prototype that won Best Alternative Controller at Global Game Jam 2024.',   // One line on what it is.
+    media: '',   // Your picture, GIF, or video file, like 'images/graveyard.gif'. Leave '' for the gray stand-in.
+    why: 'One or two sentences on why you made it.',   // The "Why I made it" part. Type your words between the quotes.
+    special: 'One or two sentences on what makes it special.',   // The "What makes it special" part.
+    teaches: 'One or two sentences on what it teaches or encourages players to do.',   // The "What it teaches" part. Delete this line if it does not fit.
+    links: [{ label: 'Play on itch.io', url: '' }]   // The pink button. Paste your web address between the quotes after url:
+  },   // End of this project.
+  'ar-history': {   // Project id. Must match data-quick="ar-history" in index.html.
+    title: 'ARtifacts: Central Park',   // The project's name. Change the words between the quotes.
+    role: 'Your role · 2025',   // Your role and the year, shown in pink.
+    tags: ['Learning', 'AR'],   // The small tags. Each word goes in quotes, with commas between.
+    note: 'A location-based AR history prototype and research poster, presented at the Connected Learning Summit 2025.',   // One line on what it is.
+    media: '',   // Your picture, GIF, or video file, like 'images/graveyard.gif'. Leave '' for the gray stand-in.
+    why: 'One or two sentences on why you made it.',   // The "Why I made it" part. Type your words between the quotes.
+    special: 'One or two sentences on what makes it special.',   // The "What makes it special" part.
+    teaches: 'One or two sentences on what it teaches or encourages players to do.',   // The "What it teaches" part. Delete this line if it does not fit.
+    links: [{ label: 'See the poster', url: '' }]   // The pink button. Paste your web address between the quotes after url:
+  },   // End of this project.
+  'see-you-in-court': {   // Project id. Must match data-quick="see-you-in-court" in index.html.
+    title: 'See You In Court',   // The project's name. Change the words between the quotes.
+    role: 'Your role · Year',   // Your role and the year, shown in pink.
+    tags: ['Board game'],   // The small tags. Each word goes in quotes, with commas between.
+    note: 'A board game.',   // One line on what it is.
+    why: 'One or two sentences on why you made it.',   // The "Why I made it" part. Type your words between the quotes.
+    special: 'One or two sentences on what makes it special.',   // The "What makes it special" part.
+    teaches: 'One or two sentences on what it teaches or encourages players to do.',   // The "What it teaches" part. Delete this line if it does not fit.
+    photos: true,   // true = 3 photos people can click. Or list your files, like ['a.jpg', 'b.jpg', 'c.jpg'].
+    links: []   // No link buttons. To add one: [{ label: 'Button words', url: 'https://...' }]
+  },   // End of this project.
+  'governors-island': {   // Project id. Must match data-quick="governors-island" in index.html.
+    title: 'Governors Island',   // The project's name. Change the words between the quotes.
+    role: 'Your role · Year',   // Your role and the year, shown in pink.
+    tags: ['Board game'],   // The small tags. Each word goes in quotes, with commas between.
+    note: 'A board game.',   // One line on what it is.
+    why: 'One or two sentences on why you made it.',   // The "Why I made it" part. Type your words between the quotes.
+    special: 'One or two sentences on what makes it special.',   // The "What makes it special" part.
+    teaches: 'One or two sentences on what it teaches or encourages players to do.',   // The "What it teaches" part. Delete this line if it does not fit.
+    photos: true,   // true = 3 photos people can click. Or list your files, like ['a.jpg', 'b.jpg', 'c.jpg'].
+    links: []   // No link buttons. To add one: [{ label: 'Button words', url: 'https://...' }]
+  },   // End of this project.
+  'windchimes': {   // Project id. Must match data-quick="windchimes" in index.html.
+    title: 'Wishing Windchimes',   // The project's name. Change the words between the quotes.
+    role: 'Your role · Year',   // Your role and the year, shown in pink.
+    tags: ['Physical'],   // The small tags. Each word goes in quotes, with commas between.
+    note: 'A fabrication project.',   // One line on what it is.
+    why: 'One or two sentences on why you made it.',   // The "Why I made it" part. Type your words between the quotes.
+    special: 'One or two sentences on what makes it special.',   // The "What makes it special" part.
+    teaches: 'One or two sentences on what it teaches or encourages players to do.',   // The "What it teaches" part. Delete this line if it does not fit.
+    photos: true,   // true = 3 photos people can click. Or list your files, like ['a.jpg', 'b.jpg', 'c.jpg'].
+    links: []   // No link buttons. To add one: [{ label: 'Button words', url: 'https://...' }]
+  },   // End of this project.
+  'circuit-sewing': {   // Project id. Must match data-quick="circuit-sewing" in index.html.
+    title: 'Circuit Sewing',   // The project's name. Change the words between the quotes.
+    role: 'Your role · Year',   // Your role and the year, shown in pink.
+    tags: ['Physical'],   // The small tags. Each word goes in quotes, with commas between.
+    note: 'Sewn circuits.',   // One line on what it is.
+    why: 'One or two sentences on why you made it.',   // The "Why I made it" part. Type your words between the quotes.
+    special: 'One or two sentences on what makes it special.',   // The "What makes it special" part.
+    teaches: 'One or two sentences on what it teaches or encourages players to do.',   // The "What it teaches" part. Delete this line if it does not fit.
+    photos: true,   // true = 3 photos people can click. Or list your files, like ['a.jpg', 'b.jpg', 'c.jpg'].
+    links: []   // No link buttons. To add one: [{ label: 'Button words', url: 'https://...' }]
+  },   // End of this project.
+  'wood-gear': {   // Project id. Must match data-quick="wood-gear" in index.html.
+    title: 'Wood and Gear Work',   // The project's name. Change the words between the quotes.
+    role: 'Your role · Year',   // Your role and the year, shown in pink.
+    tags: ['Physical'],   // The small tags. Each word goes in quotes, with commas between.
+    note: 'Woodworking and gears.',   // One line on what it is.
+    why: 'One or two sentences on why you made it.',   // The "Why I made it" part. Type your words between the quotes.
+    special: 'One or two sentences on what makes it special.',   // The "What makes it special" part.
+    teaches: 'One or two sentences on what it teaches or encourages players to do.',   // The "What it teaches" part. Delete this line if it does not fit.
+    photos: true,   // true = 3 photos people can click. Or list your files, like ['a.jpg', 'b.jpg', 'c.jpg'].
+    links: []   // No link buttons. To add one: [{ label: 'Button words', url: 'https://...' }]
+  },   // End of this project.
+  'graveyard': {   // Project id. Must match data-quick="graveyard" in index.html.
+    title: 'Graveyard',   // The project's name. Change the words between the quotes.
+    role: 'Your role · Year',   // Your role and the year, shown in pink.
+    tags: ['Game'],   // The small tags. Each word goes in quotes, with commas between.
+    note: 'A Scratch click game.',   // One line on what it is.
+    media: '',   // Your picture, GIF, or video file, like 'images/graveyard.gif'. Leave '' for the gray stand-in.
+    why: 'One or two sentences on why you made it.',   // The "Why I made it" part. Type your words between the quotes.
+    special: 'One or two sentences on what makes it special.',   // The "What makes it special" part.
+    teaches: 'One or two sentences on what it teaches or encourages players to do.',   // The "What it teaches" part. Delete this line if it does not fit.
+    links: [{ label: 'Play on Scratch', url: '' }]   // The pink button. Paste your web address between the quotes after url:
+  },   // End of this project.
+  'dino-tweak': {   // Project id. Must match data-quick="dino-tweak" in index.html.
+    title: 'Dino Tweak',   // The project's name. Change the words between the quotes.
+    role: 'Your role · Year',   // Your role and the year, shown in pink.
+    tags: ['Game'],   // The small tags. Each word goes in quotes, with commas between.
+    note: 'A Scratch click game.',   // One line on what it is.
+    media: '',   // Your picture, GIF, or video file, like 'images/graveyard.gif'. Leave '' for the gray stand-in.
+    why: 'One or two sentences on why you made it.',   // The "Why I made it" part. Type your words between the quotes.
+    special: 'One or two sentences on what makes it special.',   // The "What makes it special" part.
+    teaches: 'One or two sentences on what it teaches or encourages players to do.',   // The "What it teaches" part. Delete this line if it does not fit.
+    links: [{ label: 'Play on Scratch', url: '' }]   // The pink button. Paste your web address between the quotes after url:
+  },   // End of this project.
+  'dark-romance': {   // Project id. Must match data-quick="dark-romance" in index.html.
+    title: 'Dark Romance',   // The project's name. Change the words between the quotes.
+    role: 'Your role · Year',   // Your role and the year, shown in pink.
+    tags: ['Game'],   // The small tags. Each word goes in quotes, with commas between.
+    note: 'A Unity game.',   // One line on what it is.
+    media: '',   // Your picture, GIF, or video file, like 'images/graveyard.gif'. Leave '' for the gray stand-in.
+    why: 'One or two sentences on why you made it.',   // The "Why I made it" part. Type your words between the quotes.
+    special: 'One or two sentences on what makes it special.',   // The "What makes it special" part.
+    teaches: 'One or two sentences on what it teaches or encourages players to do.',   // The "What it teaches" part. Delete this line if it does not fit.
+    links: [{ label: 'Play on itch.io', url: '' }]   // The pink button. Paste your web address between the quotes after url:
+  },   // End of this project.
+  'missing-sister': {   // Project id. Must match data-quick="missing-sister" in index.html.
+    title: 'Missing Sister',   // The project's name. Change the words between the quotes.
+    role: 'Your role · Year',   // Your role and the year, shown in pink.
+    tags: ['Game'],   // The small tags. Each word goes in quotes, with commas between.
+    note: 'A Unity game.',   // One line on what it is.
+    media: '',   // Your picture, GIF, or video file, like 'images/graveyard.gif'. Leave '' for the gray stand-in.
+    why: 'One or two sentences on why you made it.',   // The "Why I made it" part. Type your words between the quotes.
+    special: 'One or two sentences on what makes it special.',   // The "What makes it special" part.
+    teaches: 'One or two sentences on what it teaches or encourages players to do.',   // The "What it teaches" part. Delete this line if it does not fit.
+    links: [{ label: 'Play on itch.io', url: '' }]   // The pink button. Paste your web address between the quotes after url:
+  }   // End of this project.
+};                                                         // End of QUICK_LOOKS.
+
+const QUICK_ORDER = Object.keys(QUICK_LOOKS);              // The order for Previous and Next: the same order as the list above.
+
+const quickLook = document.getElementById('quick-look');   // The quick look cover.
+const quickPanel = document.getElementById('quick-panel'); // Its panel.
+const quickClose = document.getElementById('quick-close'); // Its Close button.
+const quickPrev = document.getElementById('quick-prev');   // Its Previous button.
+const quickNext = document.getElementById('quick-next');   // Its Next button.
+let openQuickId = null;                                    // Which project is showing.
+let focusBeforeQuick = null;                               // What was selected before opening, so we can return there.
+
+function makeTextElement(tag, className, text) {           // Makes a new element with some words in it.
+  const element = document.createElement(tag);             // Make the element (like a <div>).
+  if (className) element.className = className;            // Give it a class, if one was given.
+  element.textContent = text;                              // Put the words in. textContent keeps them as plain words, never code.
+  return element;                                          // Give it back.
+}                                                          // End of makeTextElement.
+
+function showBigPhoto(files, index, row, big, title) {   // Shows one photo large and outlines its small photo in pink.
+  Array.from(row.children).forEach(function (thumb, i) {   // For each small photo...
+    thumb.classList.toggle('is-selected', i === index);    // ...outline only the chosen one (see style.css)...
+    thumb.setAttribute('aria-pressed', i === index ? 'true' : 'false');   // ...and tell screen readers which one is chosen.
+  });                                                      // End of the small photos.
+  big.textContent = '';                                    // Clear the big photo.
+  big.classList.toggle('placeholder', !files[index]);      // Gray stand-in if there is no file yet.
+  if (files[index]) {                                      // A real photo file?
+    const img = document.createElement('img');             // Show it big.
+    img.src = files[index];                                // The file.
+    img.alt = title + ', photo ' + (index + 1);            // Describes it for screen readers.
+    big.appendChild(img);                                  // Put it in.
+  } else {                                                 // No file yet?
+    big.textContent = 'photo ' + (index + 1) + ', large';  // Stand-in label.
+  }                                                        // End of if.
+}                                                          // End of showBigPhoto.
+
+function quickStep(id, direction) {                        // Finds the project before (-1) or after (1) this one.
+  const position = QUICK_ORDER.indexOf(id);                // Where this one is in the list.
+  return QUICK_ORDER[(position + direction + QUICK_ORDER.length) % QUICK_ORDER.length];   // Wraps around at both ends.
+}                                                          // End of quickStep.
+
+function fillQuickLook(id) {                               // Puts a project's words into the quick look.
+  const project = QUICK_LOOKS[id];                         // Look up the project.
+  openQuickId = id;                                        // Remember it.
+
+  const media = document.getElementById('quick-media');    // The picture area.
+  media.className = '';                                    // Clear the old look...
+  media.textContent = '';                                  // ...and the old contents.
+  if (project.photos) {                                    // A physical project? Show a row of small photos with a big one below.
+    const files = Array.isArray(project.photos) ? project.photos : [null, null, null];   // Real photo files, or 3 stand-ins if photos is just true.
+    const row = document.createElement('div');             // The row of small photos...
+    row.className = 'quick-photos';                        // (styled in style.css)
+    const big = document.createElement('div');             // ...and the big photo under them.
+    big.className = 'quick-big';                           // (styled in style.css)
+    media.className = 'quick-gallery';                     // The whole photo area.
+    files.forEach(function (file, i) {                     // For each photo...
+      const thumb = document.createElement('button');      // ...make a small clickable photo.
+      thumb.className = 'quick-thumb';                     // (styled in style.css)
+      thumb.setAttribute('aria-label', 'Show photo ' + (i + 1) + ' larger');   // What screen readers say.
+      if (file) {                                          // A real photo file?
+        const img = document.createElement('img');         // Show it.
+        img.src = file;                                    // The file name, like 'photos/windchimes-1.jpg'.
+        img.alt = '';                                      // The big photo below carries the description, so this one stays quiet.
+        thumb.appendChild(img);                            // Put the picture in the button.
+      } else {                                             // No file yet?
+        thumb.classList.add('placeholder');                // Gray stand-in...
+        thumb.textContent = 'photo ' + (i + 1);            // ...with a label.
+      }                                                    // End of if.
+      thumb.addEventListener('click', function () { showBigPhoto(files, i, row, big, project.title); });   // Clicking it shows it big.
+      row.appendChild(thumb);                              // Add it to the row.
+    });                                                    // End of the photos.
+    media.appendChild(row);                                // Small photos on top...
+    media.appendChild(big);                                // ...big photo below.
+    showBigPhoto(files, 0, row, big, project.title);       // Start with the first photo selected.
+  } else {                                                 // Otherwise, one big picture.
+    media.className = 'quick-media';                       // The big picture area.
+    putMedia(media, project.media, project.title, 'screenshot, GIF, or short clip');   // Your picture or video, or a stand-in.
+  }                                                        // End of if.
+
+  document.getElementById('quick-title').textContent = project.title;   // Title.
+  document.getElementById('quick-role').textContent = project.role;     // Role and year.
+  document.getElementById('quick-note').textContent = project.note;     // One line on what it is.
+
+  const parts = document.getElementById('quick-parts');    // The three short labeled parts.
+  parts.textContent = '';                                  // Clear the old ones.
+  [['Why I made it', project.why], ['What makes it special', project.special], ['What it teaches', project.teaches]].forEach(function (part) {   // For each part...
+    if (!part[1]) return;                                  // ...skip it if there are no words for it...
+    const block = document.createElement('div');           // ...otherwise make a small block...
+    block.className = 'quick-part';                        // (styled in style.css)
+    block.appendChild(makeTextElement('h3', 'small-label', part[0]));   // ...with a tiny label...
+    block.appendChild(makeTextElement('p', 'body-text', part[1]));      // ...and the words.
+    parts.appendChild(block);                              // Add it.
+  });                                                      // End of the parts.
+
+  const tags = document.getElementById('quick-tags');      // The tag list.
+  tags.textContent = '';                                   // Clear the old tags.
+  project.tags.forEach(function (tag) { tags.appendChild(makeTextElement('li', '', tag)); });   // Add each tag.
+
+  const links = document.getElementById('quick-links');    // The button row.
+  links.textContent = '';                                  // Clear the old buttons.
+  links.hidden = project.links.length === 0;               // No links? Hide the row.
+  project.links.forEach(function (link) {                  // For each link...
+    const button = makeTextElement('a', 'glow-button', link.label);   // ...make a pink pill button...
+    if (link.url) {                                        // ...and if it has a web address...
+      button.href = link.url;                              // ...point it there,
+      button.target = '_blank';                            // open it in a new tab,
+      button.rel = 'noopener';                             // (a safety setting for new tabs)
+    } else {                                               // No web address yet?
+      button.classList.add('is-placeholder');              // Show it faded and unclickable (see style.css).
+      button.setAttribute('aria-disabled', 'true');        // Tell screen readers it does not work yet.
+    }                                                      // End of if.
+    links.appendChild(button);                             // Add the button.
+  });                                                      // End of the links.
+
+  quickPrev.textContent = '← ' + QUICK_LOOKS[quickStep(id, -1)].title;   // Label Previous with the project's name.
+  quickNext.textContent = QUICK_LOOKS[quickStep(id, 1)].title + ' →';    // Label Next with the project's name.
+  quickPanel.scrollTop = 0;                                // Start at the top.
+}                                                          // End of fillQuickLook.
+
+function openQuickLook(id, cameFromLink) {                 // Opens a quick look.
+  if (!QUICK_LOOKS[id]) return;                            // Unknown project? Do nothing.
+  focusBeforeQuick = document.activeElement;               // Remember what was selected.
+  fillQuickLook(id);                                       // Fill in the words.
+  quickLook.hidden = false;                                // Show it.
+  document.documentElement.classList.add('no-scroll');     // Freeze the page behind it.
+  requestAnimationFrame(function () {                      // Wait two frames so the fade-in plays...
+    requestAnimationFrame(function () { quickLook.classList.add('open'); });   // ...then add "open."
+  });                                                      // End of the wait.
+  if (!cameFromLink) setAddress('#' + id);                 // Put #graveyard (etc.) in the address bar so the link can be shared.
+  setTimeout(function () { quickClose.focus(); }, 60);     // Select Close for keyboard users.
+}                                                          // End of openQuickLook.
+
+function closeQuickLook() {                                // Closes the quick look.
+  if (quickLook.hidden) return;                            // Already closed? Do nothing.
+  quickLook.classList.remove('open');                      // Start fading out.
+  setAddress(location.pathname + location.search);         // Remove the #project from the address bar.
+  setTimeout(function () {                                 // After the fade:
+    quickLook.hidden = true;                               // hide it,
+    document.documentElement.classList.remove('no-scroll');   // unfreeze the page,
+    if (focusBeforeQuick && focusBeforeQuick.focus) focusBeforeQuick.focus();   // and return focus where it was.
+  }, lessMotion ? 0 : 380);                                // 0.38 seconds later (right away for less motion).
+}                                                          // End of closeQuickLook.
+
+function stepQuickLook(direction) {                        // Shows the previous (-1) or next (1) project.
+  const id = quickStep(openQuickId, direction);            // Find it.
+  fillQuickLook(id);                                       // Show it.
+  setAddress('#' + id);                                    // Update the address bar.
+}                                                          // End of stepQuickLook.
+
+quickClose.addEventListener('click', closeQuickLook);      // Close closes it.
+quickLook.addEventListener('click', function (event) {     // Clicking the dark area outside the panel...
+  if (event.target === quickLook) closeQuickLook();        // ...closes it too.
+});                                                        // End of the outside-click listener.
+quickPrev.addEventListener('click', function () { stepQuickLook(-1); });   // Previous button.
+quickNext.addEventListener('click', function () { stepQuickLook(1); });    // Next button.
+
+
+// ---------------------------------------------------------------------
+// 13. START EVERYTHING
 // ---------------------------------------------------------------------
 
 function everyFrame(now) {                                 // Runs about 60 times per second.
@@ -949,12 +1329,13 @@ updateBackgroundAndMenu();                                 // Set the starting b
 requestAnimationFrame(everyFrame);                         // Start the animation loop.
 
 if (document.fonts && document.fonts.ready) {              // When the fonts finish loading (they change sizes a little)...
-  document.fonts.ready.then(function () {                 // ...run these steps:
-    placeBall(ballState.section, ballState.spot, 'instant');   // ...re-place the ball...
-    highlightedMenuItem = -1;                             // ...make the menu re-check...
-    updateBackgroundAndMenu();                             // ...and refresh the colors.
-  });                                                     // End of this step.
-}                                                         // End of this block.
+  document.fonts.ready.then(function () {                  // ...run these steps:
+    placeBall(ballState.section, ballState.spot, 'instant');   // re-place the ball,
+    highlightedMenuItem = -1;                              // make the menu re-check,
+    updateBackgroundAndMenu();                             // and refresh the colors.
+  });                                                      // End of the font steps.
+}                                                          // End of if.
 
 const linkedProject = location.hash.slice(1);              // If the address ends with #dsff, this is "dsff".
 if (PROJECTS[linkedProject]) openPopup(linkedProject, true);   // Open that project right away, for shared links.
+if (QUICK_LOOKS[linkedProject]) openQuickLook(linkedProject, true);   // Same for Playground quick looks, like #graveyard.

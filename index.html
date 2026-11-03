@@ -1,13 +1,168 @@
 <!doctype html> <!-- Tells the browser this is a modern web page. Always keep this as the very first line. -->
+<!--
+=========================================================================
+  HOW TO ADD AND CHANGE THINGS  (a quick guide for future you)
+=========================================================================
+  Your site is 3 main files that work together:
+    index.html = the words and boxes on the page (this file)
+    style.css  = how everything looks (colors, sizes, spacing)
+    script.js  = how things move, plus the words inside the pop-ups
+  Tip: In VS Code, press Ctrl+F (Cmd+F on a Mac) to search for the words in
+  quotes below, like "PLAYGROUND CARD TEMPLATE", to jump right to the spot.
+
+  .......................................................................
+  1. ADD A NEW CASE STUDY
+  .......................................................................
+  a) Pick a short id: lowercase letters and dashes only, like "space-game".
+  b) In this file, search for "CASE STUDY CARD TEMPLATE". Copy one whole card,
+     from the line that starts with <div class="stack project-card" down to
+     its "End of case study card" line. Paste it right after the last card.
+  c) In the card you pasted, change:
+       data-open="..."   to your new id
+       aria-label="..."  to "Open [Project name] case study"
+       the project name, role line, description, and tags.
+  d) In script.js, search for "const PROJECTS". Copy one whole project block,
+     from its id line (like 'shifty-friend': {) down to its closing },
+     and paste it just above the line that says "End of PROJECTS."
+     Change the id to match, then fill in the words.
+     Check that the block above yours ends with }, (a comma after the bracket).
+  e) In script.js, search for "const PROJECT_ORDER" and add your id in quotes,
+     with a comma, where you want it in the "Next" order.
+  f) Save, then check it with Live Server.
+
+  .......................................................................
+  2. ADD A NEW PLAYGROUND PROJECT
+  .......................................................................
+  a) Pick a short id, like "pixel-pets".
+  b) In this file, search for "PLAYGROUND CARD TEMPLATE". Copy one whole card,
+     from <div class="stack project-card playground-card" down to its
+     "End of playground card" line. Paste it where you want it in the row.
+  c) Change data-quick="..." to your id, and change aria-label, the name,
+     the description, and the tags.
+  d) In script.js, search for "const QUICK_LOOKS". Copy one whole project block
+     and paste it inside the list. Change the id to match and fill in the words.
+     The order of this list is the order of the Previous and Next buttons.
+
+  .......................................................................
+  3. ADD OR CHANGE TAGS (the little pills like GAME or LEARNING)
+  .......................................................................
+  On a card in this file: inside <ul class="tags">, each tag is one
+    <li>Word</li>. Add one, delete one, or change the word.
+  In a Playground quick look (script.js): change the tags: line, like
+    tags: ['Game', 'Physical'],   Each word in quotes, with commas between.
+
+  .......................................................................
+  4. ADD OR CHANGE SKILLS AND TOOLS
+  .......................................................................
+  Search this file for "Skills and tools". Each skill is one <li>Word</li>
+  in the list right under it. Add, remove, or reorder them.
+
+  .......................................................................
+  5. ADD REAL PHOTOS AND VIDEOS
+  .......................................................................
+  a) Make a folder named images next to index.html and put your files in it.
+     Photos: .jpg or .png. Animations: .gif. Videos: .mp4 (keep them short and silent).
+     Keep each photo under about 1600 pixels wide so the site loads fast.
+  b) A card picture (in this file): find the card's gray box, like
+       <div class="placeholder thumbnail">
+     Remove the word placeholder from its class, then replace the
+     <span class="placeholder-label">...</span> line with:
+       <img src="images/your-photo.jpg" alt="Short description of the photo">
+     For Playground cards, replace the word "image" inside the box the same way.
+     Delete the "preview loop playing" line unless the card shows a video.
+  c) A case study pop-up picture (script.js): set media: to your file, like
+       media: 'images/dsff-hero.jpg',
+  d) A Playground pop-up: set media: for one big picture, or for physical
+     projects, set photos: to a list, like
+       photos: ['images/chimes-1.jpg', 'images/chimes-2.jpg', 'images/chimes-3.jpg'],
+  e) Your portrait: replace portrait.jpg with a new square photo of the same name.
+
+  .......................................................................
+  6. CHANGE A CASE STUDY STORY
+  .......................................................................
+  In script.js, each case study has a sections: list. Each story part is
+    ['Heading', '<p class="body-text">Your words.</p>'],
+  Copy a line to add a part, or delete a line to remove one.
+  To add a quote: change the quote: line. To remove it: delete that line.
+
+  .......................................................................
+  7. ADD A LINK BUTTON TO A PLAYGROUND PROJECT
+  .......................................................................
+  In script.js, change the links: line, like
+    links: [{ label: 'Play on Scratch', url: 'https://scratch.mit.edu/projects/123' }]
+  Until url has a web address, the button shows faded so it never leads nowhere.
+
+  .......................................................................
+  8. CHANGE COLORS, FONTS, OR THE BALL
+  .......................................................................
+  Colors and fonts: style.css, section 1 (EASY SETTINGS).
+  Background fade and ball speed: script.js, section 1 (EASY SETTINGS).
+
+  .......................................................................
+  9. PUT YOUR CHANGES ON THE LIVE SITE
+  .......................................................................
+  Save every file, check it with Live Server, then in VS Code's Source
+  Control panel: type a short message, click Commit, then Sync Changes.
+  Wait a minute or two, then refresh gameologygirl.com.
+
+  .......................................................................
+  10. WORD HELPER (what the code words mean)
+  .......................................................................
+  Tag       = a label in pointy brackets, like <p>. Most tags come in pairs:
+              <p> starts something and </p> (with a slash) ends it.
+  <p>       = a paragraph of words.     <h1>, <h2>, <h3> = headings (titles).
+  <div>     = a box that holds other things.     <span> = a small piece of words.
+  <ul>, <li> = a list, and one thing in that list.
+  <a>       = a link.     <img> = a picture.     <button> = something you click.
+  class=""  = a name that tells style.css how this part should look.
+  id=""     = a one-of-a-kind name, so script.js and links can find this part.
+  Notes     = words for people, like this whole guide. A note starts with
+              <!  then two dashes, and ends with two dashes then  >
+              The browser skips everything inside a note.
+  &amp;     = how you write the & sign so the browser does not get confused.
+
+  .......................................................................
+  11. SAFE EDITING RULES
+  .......................................................................
+  - Change the words BETWEEN the tags. Leave the pointy brackets alone.
+  - If you delete a start tag like <p>, delete its end tag </p> too.
+  - Keep the quote marks around class="..." and other names.
+  - Made a mistake? Press Ctrl+Z (Cmd+Z on a Mac) to undo.
+  - Always check your change with Live Server before you push it.
+=========================================================================
+-->
 <html lang="en"> <!-- The start of the whole page. lang="en" says the page is in English. -->
 <head> <!-- The head holds behind-the-scenes info. Nothing in here shows on the page itself. -->
   <meta charset="utf-8"> <!-- Lets the page show every kind of letter and symbol correctly. -->
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"> <!-- Makes the page fit phone screens instead of looking tiny. -->
-  <title>portfolio version 1_9_27_26</title> <!-- The name shown on the browser tab. Change the words between the tags to rename it. -->
+  <!-- Version note (only people reading the code see this): portfolio version 1_9_27_26 -->
+  <title>Brandy Coleman | Learning Experience and Game Designer, Creative Technologist</title> <!-- The name on the browser tab and the big blue link in Google results. -->
+  <meta name="description" content="Brandy Coleman designs games and interactive experiences that help people learn, feel, and connect."> <!-- The gray sentence under your link in Google results. Keep it under about 155 letters. -->
+  <link rel="canonical" href="https://gameologygirl.com/"> <!-- Tells Google which web address is the "real" one for this page. -->
+  <link rel="icon" href="favicon.svg" type="image/svg+xml"> <!-- The tiny tab icon: a ball of light. -->
+  <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png"> <!-- A backup tab icon for browsers that cannot show the one above. -->
+  <link rel="apple-touch-icon" href="apple-touch-icon.png"> <!-- The icon used if someone saves your site to their phone's home screen. -->
+  <meta name="theme-color" content="#29252E"> <!-- Tints the browser's top bar on some phones to match your page. -->
+
+  <!-- SHARING PREVIEW: what shows up when someone pastes your link into LinkedIn, Slack, or a text message. -->
+  <meta property="og:type" content="website"> <!-- "og" stands for Open Graph, the format these apps read. This says the link is a website. -->
+  <meta property="og:url" content="https://gameologygirl.com/"> <!-- Your site's address. -->
+  <meta property="og:title" content="Brandy Coleman | Learning Experience and Game Designer, Creative Technologist"> <!-- The bold title on the preview card. -->
+  <meta property="og:description" content="Brandy Coleman designs games and interactive experiences that help people learn, feel, and connect."> <!-- The smaller text on the preview card. -->
+  <meta property="og:image" content="https://gameologygirl.com/og-image.png"> <!-- The preview picture. It must be a full web address, so it only works once the site is live. -->
+  <meta property="og:image:width" content="1200"> <!-- The picture's width in pixels. -->
+  <meta property="og:image:height" content="630"> <!-- The picture's height in pixels. -->
+  <meta property="og:image:alt" content="A small glowing ball of light on a dark purple background."> <!-- Describes the picture for screen readers. -->
+  <meta name="twitter:card" content="summary_large_image"> <!-- Asks X (Twitter) and similar apps to show the big picture version of the card. -->
   <link rel="preconnect" href="https://fonts.googleapis.com"> <!-- Says hello to Google Fonts early so the fonts load faster. -->
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> <!-- Same idea, for the server that sends the actual font files. -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,500,100;1,9..144,400,100&family=DM+Sans:opsz,wght@9..40,400;9..40,500&family=JetBrains+Mono:wght@400&display=swap"> <!-- Loads our three fonts: Fraunces (fancy serif), DM Sans (body text), JetBrains Mono (placeholder labels only). -->
   <link rel="stylesheet" href="style.css"> <!-- Loads our style file. style.css decides colors, sizes, and layout. -->
+  <!-- VISIT STATS (GoatCounter: free, no cookies, so no cookie banner needed).
+       To turn it on: 1) Make a free account at goatcounter.com and pick a code, like "gameologygirl".
+       2) In the line below, replace YOUR-CODE with your code.
+       3) On the line below, delete the note marks at the very start (less-than, !, and two dashes) and at the very end (two dashes and greater-than). Then visits show up on your GoatCounter page. -->
+  <!-- <script data-goatcounter="https://YOUR-CODE.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script> -->
 </head> <!-- End of the behind-the-scenes part. -->
 <body> <!-- Everything inside body is what visitors actually see. -->
 
@@ -18,7 +173,7 @@
   <!-- ===================== HEADER (top bar) ===================== -->
   <header> <!-- The floating header at the top of the screen. -->
     <div class="header-inner"> <!-- A box that keeps the header lined up with the rest of the page. -->
-      <div class="logo">GAMEOLOGY<span class="logo-pink">GIRL</span></div> <!-- The logo. The span around GIRL lets us color just that word pink. -->
+      <a class="logo" href="#about" id="logo" aria-label="GameologyGirl, back to top"><span class="logo-full">GAMEOLOGY<span class="logo-pink">GIRL</span></span><span class="logo-short" aria-hidden="true">G<span class="logo-pink">G</span></span></a> <!-- The logo. Clicking it glides back to the top. Phones show the short "GG" version so the menu fits. -->
       <nav aria-label="Sections"> <!-- nav means "navigation." aria-label tells screen readers what this menu is for. -->
         <ol class="menu"> <!-- ol is a list. Each li below is one menu item. -->
           <li><button data-go="0" aria-current="true">About</button></li> <!-- data-go="0" means "glide to section number 0" (the first section). -->
@@ -33,25 +188,31 @@
   <main id="stage"> <!-- main holds all the sections. id="stage" lets script.js find it, because the ball lives in here too. -->
 
     <!-- ---------- SECTION 1: ABOUT ---------- -->
-    <section class="section" id="about"> <!-- Every section uses class="section" so script.js can count them. -->
+    <section class="section" id="about" aria-label="About"> <!-- Every section uses class="section" so script.js can count them. aria-label names this area for screen readers. -->
       <div class="section-inner"> <!-- Keeps the content from getting too wide on big screens. -->
-        <span class="section-title">About</span> <!-- The small pink title at the top of the section. -->
+        <p class="section-title">About</p> <!-- The small pink title. Not a heading on purpose: your name below is the main heading (h1) for this part. -->
         <div class="two-columns"> <!-- Puts the text on the left and the portrait on the right. -->
           <div class="stack"> <!-- A stack puts things on top of each other with even spacing. -->
             <h1>Brandy Coleman</h1> <!-- h1 is the biggest, most important heading. Use only one per page. -->
-            <p class="subtitle">Game designer and creative technologist</p> <!-- The italic line under your name. -->
-            <p class="body-text">I design games and interactive experiences that help people learn, feel, and connect. My background in Art History and Anthropology shapes how I approach every project, with a focus on culture, community, and storytelling.</p> <!-- First bio paragraph. Edit the words freely. -->
-            <p class="body-text">I hold an MA in Design and Development of Digital Games from Teachers College, Columbia University.</p> <!-- Second bio paragraph. -->
+            <p class="subtitle"><span class="subtitle-part">Learning Experience &amp; Game Designer</span><span class="subtitle-divider" aria-hidden="true">|</span><span class="visually-hidden">, </span><span class="subtitle-part">Creative Technologist</span></p> <!-- The italic line under your name. &amp; shows as "&". Each title sits in a "subtitle-part" so it never splits across two lines. The | is the soft pink line between your titles. The hidden comma makes screen readers pause there. -->
+            <p class="body-text">I design and develop digital and physical games and interactive experiences. I love creating worlds that help people feel seen or explore things in a new way. As a lifelong horror fan, I learned early that play is the safest place to try something hard and build resilience for real life. I bring that same idea to everything I design. My players have faced their fears, argued court cases, uncovered hidden histories, and pushed through natural disasters.</p> <!-- First bio paragraph: what you make, why you make it, and the big idea behind your work. Edit the words freely. -->
+            <p class="body-text">Before games, I spent over a decade working in education, mostly behind the scenes: coordinating programs, planning student events, supporting grant proposals, and more. I recently brought it all together with an MA in Design and Development of Digital Games from Teachers College, Columbia University, where I honed my craft and turned my love of games and education into my own design practice.</p> <!-- Second bio paragraph: your education background and your degree. Once your resume PDF is in the site folder, "and more" can link to it. -->
+            <p class="role-line open-line">Open to full-time roles, contract work, and creative collaborations. <a class="say-hello" href="#contact">Say hello</a></p> <!-- Pink "open to work" line. "Say hello" glides down to Contact (script.js handles the glide). When you take a job, delete this whole line or change the words. -->
+            <!-- To add a skill or tool, add one <li>Word</li> to the list below (see HOW TO #4 at the top of this file). -->
+            <div class="tools"> <!-- Your skills and the tools you use, so recruiters can spot them quickly. -->
+              <h2 class="small-label" id="tools-title">Skills and tools</h2> <!-- Tiny label. Change the words between the tags to rename it. -->
+              <ul class="tags" aria-labelledby="tools-title"><li>Unity</li><li>C#</li><li>HTML and CSS</li><li>Git and GitHub</li><li>VS Code</li><li>v0.dev</li><li>Scratch</li><li>Figma</li><li>Curriculum design</li><li>Physical prototyping</li><li>Laser cutting</li><li>3D printing</li><li>Woodworking</li><li>Circuit sewing</li></ul> <!-- One <li> per tool. Add, remove, or reorder freely. -->
+            </div> <!-- End of the tools. -->
           </div> <!-- End of the text stack. -->
-          <div class="placeholder portrait">portrait</div> <!-- A gray stand-in for your photo. Later, swap this whole line for: <img class="portrait" src="your-photo.jpg" alt="Brandy Coleman"> -->
+          <img class="portrait" src="portrait.jpg" alt="Brandy Coleman in a brown felt hat" width="640" height="640"> <!-- Your portrait. alt describes the photo for screen readers. To swap it, replace portrait.jpg with a new square photo of the same name. -->
         </div> <!-- End of two-columns. -->
       </div> <!-- End of section-inner. -->
     </section> <!-- End of the About section. -->
 
     <!-- ---------- SECTION 2: WORK ---------- -->
-    <section class="section" id="work"> <!-- The Work section. -->
+    <section class="section" id="work" aria-labelledby="work-title"> <!-- The Work section. aria-labelledby tells screen readers its name is the heading with id="work-title". -->
       <div class="section-inner roomy"> <!-- "roomy" adds extra space between the parts of this section. -->
-        <span class="section-title">Work</span> <!-- Section title. -->
+        <h2 class="section-title" id="work-title">Work</h2> <!-- Section title. h2 = a main part of the page, so screen reader users can jump here. -->
         <div class="two-columns equal"> <!-- "equal" makes both columns the same width. -->
           <button class="placeholder thumbnail featured-image" data-open="dsff" aria-label="Open Dark Scenes with the Fear Forge case study"> <!-- The big featured image. data-open="dsff" tells script.js which case study to open when clicked. -->
             <span class="placeholder-label">hero image or video<br>Dark Scenes with the Fear Forge</span> <!-- Gray placeholder words. <br> means "new line." -->
@@ -59,17 +220,22 @@
           </button> <!-- End of the featured image button. -->
           <div class="stack"> <!-- The text next to the featured image. -->
             <span class="small-label">Featured</span> <!-- Tiny label above the project name. -->
-            <h2>Dark Scenes with the Fear Forge</h2> <!-- h2 is the second-biggest heading. -->
+            <h3 class="title-large">Dark Scenes with the Fear Forge</h3> <!-- h3 = a part inside Work. "title-large" keeps it looking big. -->
+            <p class="role-line">Your role · 2026</p> <!-- Your role and the year, in pink so it stands out. Edit the words freely. -->
             <p class="body-text">A handcrafted, coffin-shaped sound instrument and horror card game that helps children ages 8 to 12 build emotional resilience. Players face their fears together through sound, story, and play.</p> <!-- Short project description. -->
             <button class="glow-button" data-open="dsff">Read case study</button> <!-- A glowing pill button. It also opens the DSFF case study. -->
           </div> <!-- End of the featured text. -->
         </div> <!-- End of the featured row. -->
 
         <div class="peek-carousel"> <!-- A sideways-scrolling row of case study cards. You see some cards fully and "peek" at the next one. -->
-          <div class="peek-controls"> <!-- The two arrow buttons for mouse users. Phones can just swipe. -->
-            <button class="peek-arrow" data-direction="-1" aria-label="Show previous projects">←</button> <!-- Scrolls the row back one card. -->
-            <button class="peek-arrow" data-direction="1" aria-label="Show more projects">→</button> <!-- Scrolls the row forward one card. -->
-          </div> <!-- End of the arrow buttons. -->
+          <div class="peek-header"> <!-- The label on the left and the arrows on the right, on one line. -->
+            <h3 class="small-label">Case studies</h3> <!-- A heading for screen readers (h3 = a part inside Work), styled as a tiny label like Featured. -->
+            <div class="peek-controls"> <!-- The two arrow buttons for mouse users. Phones can just swipe. -->
+              <button class="peek-arrow" data-direction="-1" aria-label="Show previous case studies">←</button> <!-- Scrolls the row back one card. -->
+              <button class="peek-arrow" data-direction="1" aria-label="Show more case studies">→</button> <!-- Scrolls the row forward one card. -->
+            </div> <!-- End of the arrow buttons. -->
+          </div> <!-- End of the label and arrows. -->
+          <!-- CASE STUDY CARD TEMPLATE: to add a case study, copy one whole card below (see HOW TO #1 at the top of this file). -->
           <div class="peek-row" id="project-row"> <!-- The row itself. Each card here opens a full case study. -->
             <div class="stack project-card" data-open="career-explorer" tabindex="0" role="button" aria-label="Open Game Career Explorer case study"> <!-- Case study card 1. data-open must match a project id in script.js. -->
               <div class="placeholder thumbnail"> <!-- Thumbnail area. Swap for an <img> or <video> later. -->
@@ -77,6 +243,7 @@
                 <span class="preview-label">preview loop playing</span> <!-- Shows on hover. -->
               </div> <!-- End of thumbnail. -->
               <b class="project-name">Game Career Explorer</b> <!-- Project name. -->
+              <p class="role-line">Lead developer and experience designer · 2026</p> <!-- Your role and the year, in pink so it stands out. Edit the words freely. -->
               <p class="body-text small">An interactive web experience that simulates a game studio internship across seven departments, ending in a Unity demo game.</p> <!-- One-line description. -->
               <ul class="tags" aria-label="Project type"><li>Learning</li><li>Web</li><li>Game</li></ul> <!-- Small tags that say what kind of project this is. Add or remove <li> items. -->
             </div> <!-- End of case study card 1. -->
@@ -86,6 +253,7 @@
                 <span class="preview-label">preview loop playing</span> <!-- Shows on hover. -->
               </div> <!-- End of thumbnail. -->
               <b class="project-name">Trailblazer Heroes</b> <!-- Project name. -->
+              <p class="role-line">Content lead and Curriculum Guide author · Year</p> <!-- Your role and the year, in pink so it stands out. Edit the words freely. -->
               <p class="body-text small">Content research, writing, and the first-edition Curriculum Guide for The AAPI Card Game.</p> <!-- One-line description. -->
               <ul class="tags" aria-label="Project type"><li>Learning</li><li>Card game</li></ul> <!-- Small tags that say what kind of project this is. Add or remove <li> items. -->
             </div> <!-- End of case study card 2. -->
@@ -95,6 +263,7 @@
                 <span class="preview-label">preview loop playing</span> <!-- Shows on hover. -->
               </div> <!-- End of thumbnail. -->
               <b class="project-name">Shifty Friend</b> <!-- Project name. -->
+              <p class="role-line">Your role · Year</p> <!-- Your role and the year, in pink so it stands out. Edit the words freely. -->
               <p class="body-text small">An AI interactive. One sentence about what players do and what it explores.</p> <!-- One-line description. -->
               <ul class="tags" aria-label="Project type"><li>AI</li><li>Game</li></ul> <!-- Small tags that say what kind of project this is. Add or remove <li> items. -->
             </div> <!-- End of case study card 3. -->
@@ -104,97 +273,106 @@
                 <span class="preview-label">preview loop playing</span> <!-- Shows on hover. -->
               </div> <!-- End of thumbnail. -->
               <b class="project-name">STEAMnasium Photo Booth and I Spy</b> <!-- Project name. -->
-              <p class="body-text small">Hands-on visitor experiences: a photo booth and an I Spy game with custom tools.</p> <!-- One-line description. -->
+              <p class="role-line">Co-designer and fabricator · 2025 and 2026</p> <!-- Your role and the year, in pink so it stands out. Edit the words freely. -->
+              <p class="body-text small">Interactive exhibits co-designed and fabricated for a public STEAM learning event: a photo booth and an I Spy game.</p> <!-- One-line description. -->
               <ul class="tags" aria-label="Project type"><li>Physical</li><li>Learning</li></ul> <!-- Small tags that say what kind of project this is. Add or remove <li> items. -->
             </div> <!-- End of case study card 4. -->
           </div> <!-- End of the peek row. -->
         </div> <!-- End of the peek carousel. -->
 
-        <div class="playground" id="playground"> <!-- PLAYGROUND: smaller projects, experiments, and prototypes. No full case study, just a picture and a line. -->
-          <div class="playground-top"> <!-- The heading row. -->
-            <h3 class="playground-title">Playground</h3> <!-- Heading for this group. -->
-            <p class="body-text small">Experiments, prototypes, and game jam builds.</p> <!-- A short line explaining what this group is. -->
-          </div> <!-- End of the heading row. -->
-          <div class="playground-grid"> <!-- The grid of small cards. It fits as many columns as the screen allows. -->
-            <div class="stack playground-card"> <!-- Playground card 1. -->
+        <div class="peek-carousel playground" id="playground"> <!-- PLAYGROUND: smaller projects, experiments, and prototypes. Built just like the case study row, with smaller cards. -->
+          <div class="peek-header"> <!-- The label on the left and the arrows on the right, on one line. -->
+            <h3 class="small-label">Playground</h3> <!-- A heading for screen readers (h3 = a part inside Work), styled as a tiny label. -->
+            <div class="peek-controls"> <!-- The two arrow buttons for mouse users. Phones can just swipe. -->
+              <button class="peek-arrow" data-direction="-1" aria-label="Show previous Playground projects">←</button> <!-- Scrolls the row back one card. -->
+              <button class="peek-arrow" data-direction="1" aria-label="Show more Playground projects">→</button> <!-- Scrolls the row forward one card. -->
+            </div> <!-- End of the arrow buttons. -->
+          </div> <!-- End of the label and arrows. -->
+          <!-- PLAYGROUND CARD TEMPLATE: to add a Playground project, copy one whole card below (see HOW TO #2 at the top of this file). -->
+          <div class="peek-row" id="playground-row"> <!-- The row itself. It scrolls sideways and snaps each card into place. -->
+            <div class="stack project-card playground-card" data-quick="alt-controller" tabindex="0" role="button" aria-label="Open Alternative controller game quick look"> <!-- Playground card 1. data-quick must match an id in QUICK_LOOKS in script.js. -->
               <div class="placeholder playground-thumb">image</div> <!-- Small picture area. -->
-              <b class="project-name">Alternative controller game</b> <!-- Project name. -->
+              <h4 class="project-name">Alternative controller game</h4> <!-- Project name. h4 = one item inside Playground. -->
               <p class="body-text small">Game jam prototype. Best Alternative Controller, Global Game Jam 2024.</p> <!-- One-line description. -->
               <ul class="tags" aria-label="Project type"><li>Game</li><li>Physical</li></ul> <!-- Small tags that say what kind of project this is. Add or remove <li> items. -->
             </div> <!-- End of playground card 1. -->
-            <div class="stack playground-card"> <!-- Playground card 2. -->
+            <div class="stack project-card playground-card" data-quick="ar-history" tabindex="0" role="button" aria-label="Open ARtifacts: Central Park quick look"> <!-- Playground card 2. data-quick must match an id in QUICK_LOOKS in script.js. -->
               <div class="placeholder playground-thumb">image</div> <!-- Small picture area. -->
-              <b class="project-name">Location-based AR history</b> <!-- Project name. -->
-              <p class="body-text small">Prototype and research poster, Connected Learning Summit 2025.</p> <!-- One-line description. -->
+              <h4 class="project-name">ARtifacts: Central Park</h4> <!-- Project name. h4 = one item inside Playground. -->
+              <p class="body-text small">Location-based AR history prototype and research poster, Connected Learning Summit 2025.</p> <!-- One-line description. -->
               <ul class="tags" aria-label="Project type"><li>Learning</li><li>AR</li></ul> <!-- Small tags that say what kind of project this is. Add or remove <li> items. -->
             </div> <!-- End of playground card 2. -->
-            <div class="stack playground-card"> <!-- Playground card 3. -->
+            <div class="stack project-card playground-card" data-quick="see-you-in-court" tabindex="0" role="button" aria-label="Open See You In Court quick look"> <!-- Playground card 3. data-quick must match an id in QUICK_LOOKS in script.js. -->
               <div class="placeholder playground-thumb">image</div> <!-- Small picture area. -->
-              <b class="project-name">See You In Court</b> <!-- Project name. -->
+              <h4 class="project-name">See You In Court</h4> <!-- Project name. h4 = one item inside Playground. -->
               <p class="body-text small">A board game. One line about what players do.</p> <!-- One-line description. -->
               <ul class="tags" aria-label="Project type"><li>Board game</li></ul> <!-- Small tags that say what kind of project this is. Add or remove <li> items. -->
             </div> <!-- End of playground card 3. -->
-            <div class="stack playground-card"> <!-- Playground card 4. -->
+            <div class="stack project-card playground-card" data-quick="governors-island" tabindex="0" role="button" aria-label="Open Governors Island quick look"> <!-- Playground card 4. data-quick must match an id in QUICK_LOOKS in script.js. -->
               <div class="placeholder playground-thumb">image</div> <!-- Small picture area. -->
-              <b class="project-name">Governors Island</b> <!-- Project name. -->
+              <h4 class="project-name">Governors Island</h4> <!-- Project name. h4 = one item inside Playground. -->
               <p class="body-text small">A board game. One line about what players do.</p> <!-- One-line description. -->
               <ul class="tags" aria-label="Project type"><li>Board game</li></ul> <!-- Small tags that say what kind of project this is. Add or remove <li> items. -->
             </div> <!-- End of playground card 4. -->
-            <div class="stack playground-card"> <!-- Playground card 5. -->
+            <div class="stack project-card playground-card" data-quick="windchimes" tabindex="0" role="button" aria-label="Open Wishing Windchimes quick look"> <!-- Playground card 5. data-quick must match an id in QUICK_LOOKS in script.js. -->
               <div class="placeholder playground-thumb">image</div> <!-- Small picture area. -->
-              <b class="project-name">Wishing Windchimes</b> <!-- Project name. -->
+              <h4 class="project-name">Wishing Windchimes</h4> <!-- Project name. h4 = one item inside Playground. -->
               <p class="body-text small">A fabrication project. One line about it.</p> <!-- One-line description. -->
               <ul class="tags" aria-label="Project type"><li>Physical</li></ul> <!-- Small tags that say what kind of project this is. Add or remove <li> items. -->
             </div> <!-- End of playground card 5. -->
-            <div class="stack playground-card"> <!-- Playground card 6. -->
+            <div class="stack project-card playground-card" data-quick="circuit-sewing" tabindex="0" role="button" aria-label="Open Circuit Sewing quick look"> <!-- Playground card 6. data-quick must match an id in QUICK_LOOKS in script.js. -->
               <div class="placeholder playground-thumb">image</div> <!-- Small picture area. -->
-              <b class="project-name">Circuit Sewing</b> <!-- Project name. -->
+              <h4 class="project-name">Circuit Sewing</h4> <!-- Project name. h4 = one item inside Playground. -->
               <p class="body-text small">Sewn circuits. One line about it.</p> <!-- One-line description. -->
               <ul class="tags" aria-label="Project type"><li>Physical</li></ul> <!-- Small tags that say what kind of project this is. Add or remove <li> items. -->
             </div> <!-- End of playground card 6. -->
-            <div class="stack playground-card"> <!-- Playground card 7. -->
+            <div class="stack project-card playground-card" data-quick="wood-gear" tabindex="0" role="button" aria-label="Open Wood and Gear Work quick look"> <!-- Playground card 7. data-quick must match an id in QUICK_LOOKS in script.js. -->
               <div class="placeholder playground-thumb">image</div> <!-- Small picture area. -->
-              <b class="project-name">Wood and Gear Work</b> <!-- Project name. -->
+              <h4 class="project-name">Wood and Gear Work</h4> <!-- Project name. h4 = one item inside Playground. -->
               <p class="body-text small">Woodworking and gears. One line about it.</p> <!-- One-line description. -->
               <ul class="tags" aria-label="Project type"><li>Physical</li></ul> <!-- Small tags that say what kind of project this is. Add or remove <li> items. -->
             </div> <!-- End of playground card 7. -->
-            <div class="stack playground-card"> <!-- Playground card 8. -->
+            <div class="stack project-card playground-card" data-quick="graveyard" tabindex="0" role="button" aria-label="Open Graveyard quick look"> <!-- Playground card 8. data-quick must match an id in QUICK_LOOKS in script.js. -->
               <div class="placeholder playground-thumb">image</div> <!-- Small picture area. -->
-              <b class="project-name">Graveyard</b> <!-- Project name. -->
+              <h4 class="project-name">Graveyard</h4> <!-- Project name. h4 = one item inside Playground. -->
               <p class="body-text small">A Scratch click game.</p> <!-- One-line description. -->
               <ul class="tags" aria-label="Project type"><li>Game</li></ul> <!-- Small tags that say what kind of project this is. Add or remove <li> items. -->
             </div> <!-- End of playground card 8. -->
-            <div class="stack playground-card extra"> <!-- Playground card 9. "extra" hides it until Show all is clicked. Remove "extra" to always show a card. -->
+            <div class="stack project-card playground-card" data-quick="dino-tweak" tabindex="0" role="button" aria-label="Open Dino Tweak quick look"> <!-- Playground card 9. data-quick must match an id in QUICK_LOOKS in script.js. -->
               <div class="placeholder playground-thumb">image</div> <!-- Small picture area. -->
-              <b class="project-name">Dino Tweak</b> <!-- Project name. -->
+              <h4 class="project-name">Dino Tweak</h4> <!-- Project name. h4 = one item inside Playground. -->
               <p class="body-text small">A Scratch click game.</p> <!-- One-line description. -->
               <ul class="tags" aria-label="Project type"><li>Game</li></ul> <!-- Small tags that say what kind of project this is. Add or remove <li> items. -->
             </div> <!-- End of playground card 9. -->
-            <div class="stack playground-card extra"> <!-- Playground card 10. -->
+            <div class="stack project-card playground-card" data-quick="dark-romance" tabindex="0" role="button" aria-label="Open Dark Romance quick look"> <!-- Playground card 10. data-quick must match an id in QUICK_LOOKS in script.js. -->
               <div class="placeholder playground-thumb">image</div> <!-- Small picture area. -->
-              <b class="project-name">Dark Romance</b> <!-- Project name. -->
+              <h4 class="project-name">Dark Romance</h4> <!-- Project name. h4 = one item inside Playground. -->
               <p class="body-text small">A Unity game.</p> <!-- One-line description. -->
               <ul class="tags" aria-label="Project type"><li>Game</li></ul> <!-- Small tags that say what kind of project this is. Add or remove <li> items. -->
             </div> <!-- End of playground card 10. -->
-            <div class="stack playground-card extra"> <!-- Playground card 11. -->
+            <div class="stack project-card playground-card" data-quick="missing-sister" tabindex="0" role="button" aria-label="Open Missing Sister quick look"> <!-- Playground card 11. data-quick must match an id in QUICK_LOOKS in script.js. -->
               <div class="placeholder playground-thumb">image</div> <!-- Small picture area. -->
-              <b class="project-name">Missing Sister</b> <!-- Project name. -->
+              <h4 class="project-name">Missing Sister</h4> <!-- Project name. h4 = one item inside Playground. -->
               <p class="body-text small">A Unity game.</p> <!-- One-line description. -->
               <ul class="tags" aria-label="Project type"><li>Game</li></ul> <!-- Small tags that say what kind of project this is. Add or remove <li> items. -->
             </div> <!-- End of playground card 11. -->
-          </div> <!-- End of the playground grid. -->
-          <button class="glow-button playground-toggle" id="playground-toggle" aria-expanded="false">Show all</button> <!-- Shows or hides the extra cards. script.js changes its words. -->
+          </div> <!-- End of the peek row. -->
         </div> <!-- End of the playground. -->
       </div> <!-- End of section-inner. -->
     </section> <!-- End of the Work section. -->
 
     <!-- ---------- SECTION 3: CONTACT ---------- -->
-    <section class="section" id="contact"> <!-- The Contact section. Its content is centered (see style.css). -->
+    <section class="section" id="contact" aria-labelledby="contact-title"> <!-- The Contact section. Its content is centered (see style.css). -->
       <div class="section-inner"> <!-- Keeps the width tidy. -->
-        <span class="section-title">Contact</span> <!-- Section title. -->
-        <h2>Say hello</h2> <!-- Heading. -->
-        <p class="email">gameologygirl@gmail.com</p> <!-- Your email, written out. Clicking it selects the whole address so people can copy it. Put your real email here. -->
-        <p class="body-text">I'm open to roles in game design, UX, and learning experience design.</p> <!-- Short message. -->
+        <h2 class="section-title" id="contact-title">Contact</h2> <!-- Section title. h2 = a main part of the page. -->
+        <h3 class="title-large">Say hello</h3> <!-- h3 = a part inside Contact. "title-large" keeps it looking big. -->
+        <p class="email-row"> <!-- Your email, centered, with the Copy button hanging off its right side. -->
+          <span class="email-wrap"> <!-- Holds the email and the button together, so the button can sit just past the end of the email. -->
+          <a class="email" href="mailto:gameologygirl@gmail.com">gameologygirl@gmail.com</a> <!-- Clicking it opens the visitor's email app. "mailto:" means "start an email to this address." -->
+          <button class="copy-button" id="copy-email" type="button" data-copy="gameologygirl@gmail.com">Copy</button> <!-- Copies your email so people can paste it anywhere. -->
+          </span> <!-- End of email-wrap. -->
+        </p> <!-- End of the email row. -->
+        <p class="body-text">I am open to roles in learning experience design, UX, educational games, and digital production.</p> <!-- Short message. -->
         <div class="button-row"> <!-- Holds the buttons side by side. -->
           <a class="glow-button" href="https://www.linkedin.com/in/gameologygirl/" target="_blank" rel="noopener">LinkedIn</a> <!-- A real link to LinkedIn. target="_blank" opens it in a new tab. -->
           <a class="glow-button" href="resume.pdf" target="_blank" rel="noopener">Resume</a> <!-- Opens your resume. Put a file named resume.pdf next to this page. -->
@@ -208,6 +386,11 @@
     </button> <!-- End of the ball. -->
 
   </main> <!-- End of the main content. -->
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="site-footer"> <!-- The small line at the very bottom of the page. -->
+    <p>© 2026 Brandy Coleman</p> <!-- © is the copyright symbol. Change the year each January. -->
+  </footer> <!-- End of the footer. -->
 
   <!-- ===================== CASE STUDY POP-UP ===================== -->
   <div id="case-study" class="case-study" role="dialog" aria-modal="true" aria-labelledby="case-title" hidden> <!-- The full-screen pop-up. "hidden" keeps it invisible until a project is clicked. script.js fills in the words. -->
@@ -227,6 +410,10 @@
             <p class="wall-label-note" id="case-note"></p> <!-- One-sentence description. -->
           </div> <!-- End of the wall label. -->
         </section> <!-- End of the placard. -->
+        <blockquote class="case-quote" id="case-quote" hidden> <!-- A short quote from a player, teacher, or partner. Hidden when a project has no quote. -->
+          <p id="case-quote-text"></p> <!-- The quote itself (filled in by script.js). -->
+          <footer id="case-quote-by"></footer> <!-- Who said it. -->
+        </blockquote> <!-- End of the quote. -->
         <section class="story" id="case-story"></section> <!-- The story sections (Overview, Process, and so on) get added here by script.js. -->
         <div class="case-study-footer"> <!-- Bottom row of the pop-up. -->
           <button class="glow-button" id="next-button">Next project</button> <!-- Shows the next project without closing. -->
@@ -234,6 +421,33 @@
       </div> <!-- End of case-study-body. -->
     </div> <!-- End of the panel. -->
   </div> <!-- End of the pop-up. -->
+
+  <!-- ===================== PLAYGROUND QUICK LOOK ===================== -->
+  <div id="quick-look" class="case-study quick-look" role="dialog" aria-modal="true" aria-labelledby="quick-title" hidden> <!-- A smaller pop-up for Playground projects. Same dark cover as the case studies. script.js fills in the words. -->
+    <div class="case-study-panel" id="quick-panel"> <!-- The panel. -->
+      <div class="case-study-top"> <!-- The top strip with the label and Close. -->
+        <span class="case-study-kicker">Playground</span> <!-- Small pink label. -->
+        <button class="close-button" id="quick-close" aria-label="Close quick look">Close <span aria-hidden="true">✕</span></button> <!-- Closes the pop-up. -->
+      </div> <!-- End of the top strip. -->
+      <div class="quick-body"> <!-- Everything below the top strip. -->
+        <div class="quick-left"> <!-- The picture and the link buttons under it. -->
+          <div id="quick-media"></div> <!-- One big picture, or a row of photos (filled in by script.js). -->
+          <div class="button-row" id="quick-links"></div> <!-- Buttons that link to the real thing, like "Play on Scratch." -->
+        </div> <!-- End of the picture side. -->
+        <div class="quick-text"> <!-- The words. -->
+          <h2 class="wall-label-title" id="quick-title"></h2> <!-- Project title. -->
+          <p class="role-line" id="quick-role"></p> <!-- Your role and the year. -->
+          <ul class="tags" id="quick-tags" aria-label="Project type"></ul> <!-- Tags. -->
+          <p class="body-text" id="quick-note"></p> <!-- One line on what it is. -->
+          <div class="quick-parts" id="quick-parts"></div> <!-- Why I made it, What makes it special, What it teaches (filled in by script.js). -->
+        </div> <!-- End of the words. -->
+      </div> <!-- End of quick-body. -->
+      <div class="quick-footer"> <!-- Previous and next buttons. -->
+        <button class="glow-button" id="quick-prev">← Previous</button> <!-- Shows the project before this one. -->
+        <button class="glow-button" id="quick-next">Next →</button> <!-- Shows the project after this one. -->
+      </div> <!-- End of the footer. -->
+    </div> <!-- End of the panel. -->
+  </div> <!-- End of the quick look. -->
 
   <script src="script.js"></script> <!-- Loads script.js, which makes everything move. It goes last so the page is ready first. -->
 </body> <!-- End of the visible page. -->
